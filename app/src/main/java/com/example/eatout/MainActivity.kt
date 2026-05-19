@@ -20,9 +20,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import com.example.eatout.network.ApiService
 import com.example.eatout.ui.components.CustomTopBar
 import com.example.eatout.ui.theme.EatOutTheme
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.eatout.ui.navigation.AppNavHost
 
 class GlobalData {
     companion object {
@@ -39,6 +43,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             EatOutTheme {
                 val topBarTitle = "EatOut"
+//                val configuration = LocalConfiguration.current
+                val isTablet = false// configuration.smallestScreenWidthDp >= 600
+
+                val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
 
                 var isLoading by remember { mutableStateOf(true) }
                 var displayText by remember { mutableStateOf("Ładowanie restauracji...") }
@@ -61,9 +71,13 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
                         topBar = {
+                            val isHome = currentDestination?.route == "home"
+                            val isNotReady = currentDestination == null
                             CustomTopBar(
                                 title = topBarTitle,
-                                onBackClick = { /* Obsługa powrotu */ }
+                                onBackClick = { /* Obsługa powrotu */ },
+                                showBackButton = !isHome && !isNotReady,
+                                modifier = Modifier
                             )
                         }
                     ) { innerPadding ->
@@ -78,8 +92,9 @@ class MainActivity : ComponentActivity() {
                                 CircularProgressIndicator()
                             }
                         } else {
-                            Greeting(
-                                textToShow = displayText,
+                            AppNavHost(
+                                navController = navController,
+                                isTablet = isTablet,
                                 modifier = Modifier.padding(innerPadding)
                             )
                         }
