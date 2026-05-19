@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.eatout.network.ApiService
 import com.example.eatout.ui.theme.EatOutTheme
 import com.google.gson.JsonArray
 import kotlinx.coroutines.CoroutineScope

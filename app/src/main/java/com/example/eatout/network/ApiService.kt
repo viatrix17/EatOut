@@ -1,12 +1,7 @@
-package com.example.eatout
+package com.example.eatout.network
 
+import com.example.eatout.GlobalData
 import com.example.eatout.model.Post
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import retrofit2.http.GET
-import retrofit2.http.Query
 import java.io.IOException
 
 class ApiService {
@@ -43,8 +38,8 @@ class ApiService {
             client.newCall(request).enqueue(object : okhttp3.Callback {
                 override fun onFailure(call: okhttp3.Call, e: IOException) {
                     println("Błąd połączenia: ${e.message}")
-                    GlobalData.restaurants = "blad"
-                    GlobalData.Flag = true
+                    GlobalData.Companion.restaurants = "blad"
+                    GlobalData.Companion.Flag = true
                 }
 
                 override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
@@ -54,14 +49,14 @@ class ApiService {
                         // Tutaj masz swój czysty JSON z restauracjami
                         //println(jsonResponse)
                         wynik = jsonResponse.toString()
-                        GlobalData.restaurants = wynik
-                        Post.FindRestaurants(wynik)
+                        GlobalData.Companion.restaurants = wynik
+                        Post.Companion.FindRestaurants(wynik)
                     } else {
-                        GlobalData.restaurants = "blad"
+                        GlobalData.Companion.restaurants = "blad"
                         // Jeśli zapomnisz o addHeader, wejdzie tutaj z kodem 406
                         println("Błąd serwera");
                         wynik = "error 2"
-                        GlobalData.Flag = true
+                        GlobalData.Companion.Flag = true
                     }
                 }
             });
