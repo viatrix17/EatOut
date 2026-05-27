@@ -37,6 +37,7 @@ class GlobalData {
         var restaurants = "error"
         var Flag = false
         var ListOfRestaurants: ArrayList<String> = arrayListOf()
+        var ListOfFavourites: ArrayList<String> = arrayListOf()
     }
 }
 

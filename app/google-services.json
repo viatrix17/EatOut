@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "172868084738",
+    "project_id": "eatout-55574",
+    "storage_bucket": "eatout-55574.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:172868084738:android:ceaaf9a1356d2b54d8f31b",
+        "android_client_info": {
+          "package_name": "com.example.eatout"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3tiS9OxRh0N6itYTnn4riIPn0sIiZ2Cc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
