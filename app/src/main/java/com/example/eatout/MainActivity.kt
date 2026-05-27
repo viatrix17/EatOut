@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,7 +28,9 @@ import com.example.eatout.ui.components.CustomTopBar
 import com.example.eatout.ui.theme.EatOutTheme
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.eatout.ui.components.CustomBottomBar
 import com.example.eatout.ui.navigation.AppNavHost
+import com.example.eatout.viewmodel.MainViewModel
 
 class GlobalData {
     companion object {
@@ -37,6 +41,8 @@ class GlobalData {
 }
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -50,19 +56,8 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
 
-                var isLoading by remember { mutableStateOf(true) }
-                var displayText by remember { mutableStateOf("Ładowanie restauracji...") }
+                val isLoading by viewModel.isLoading.collectAsState()
 
-                LaunchedEffect(Unit) {
-                    ApiService.fetchRestaurantsInPoznan()
-
-                    isLoading = false
-                    displayText = if (GlobalData.restaurants != "blad") {
-                        GlobalData.ListOfRestaurants.toString()
-                    } else {
-                        "Nie udało się pobrać danych z serwera."
-                    }
-                }
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -81,25 +76,19 @@ class MainActivity : ComponentActivity() {
                                 showBackButton = !isHome && !isNotReady,
                                 modifier = Modifier
                             )
-                        }
-                    ) { innerPadding ->
-
-                        if (isLoading) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(innerPadding),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
-                            }
-                        } else {
-                            AppNavHost(
-                                navController = navController,
-                                isTablet = isTablet,
-                                modifier = Modifier.padding(innerPadding)
+                        },
+                        bottomBar = {
+                            CustomBottomBar(
+                                navController = navController
                             )
                         }
+                    ) { innerPadding ->
+                        AppNavHost(
+                            navController = navController,
+                            isLoading = isLoading,
+                            isTablet = isTablet,
+                            modifier = Modifier.padding(innerPadding)
+                        )
                     }
                 }
             }
