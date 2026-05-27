@@ -5,7 +5,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.eatout.ui.screens.BrowseScreen
+import com.example.eatout.ui.screens.ClosestToYouScreen
 import com.example.eatout.ui.screens.HomeScreen
+import com.example.eatout.ui.screens.RecommendationScreen
 
 @Composable
 fun AppNavHost(
@@ -31,7 +34,28 @@ fun AppNavHost(
 //        }
         composable("home") {
             HomeScreen(
-                isTablet = isTablet
+                isTablet = isTablet,
+                navController = navController
+            )
+        }
+
+        composable(route="browse") {
+            BrowseScreen(
+                isTablet = isTablet,
+                navController = navController
+            )
+        }
+        composable(route="closest") {
+            ClosestToYouScreen(
+                isTablet = isTablet,
+                navController = navController
+            )
+        }
+        composable(route="recommendation")
+        {
+            RecommendationScreen(
+                isTablet = isTablet,
+                navController = navController
             )
         }
     }

@@ -75,7 +75,9 @@ class MainActivity : ComponentActivity() {
                             val isNotReady = currentDestination == null
                             CustomTopBar(
                                 title = topBarTitle,
-                                onBackClick = { /* Obsługa powrotu */ },
+                                onBackClick = {
+                                    navController.popBackStack()
+                                },
                                 showBackButton = !isHome && !isNotReady,
                                 modifier = Modifier
                             )
