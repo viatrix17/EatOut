@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.eatout.ui.NoteViewModel
 import com.example.eatout.ui.screens.BrowseScreen
 import com.example.eatout.ui.screens.ClosestToYouScreen
 import com.example.eatout.ui.screens.DishesScreen
@@ -23,7 +24,8 @@ fun AppNavHost(
 //    isDarkTheme: Boolean,
     isLoading: Boolean,
     isTablet: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    noteViewModel : NoteViewModel
 ) {
 
     Box(modifier = Modifier) {
@@ -52,7 +54,8 @@ fun AppNavHost(
                 composable(route = "browse") {
                     BrowseScreen(
                         isTablet = isTablet,
-                        navController = navController
+                        navController = navController,
+                        noteViewModel = noteViewModel
                     )
                 }
                 composable(route = "closest") {
@@ -73,7 +76,8 @@ fun AppNavHost(
                 {
                     FavouriteScreen(
                         isTablet = isTablet,
-                        navController = navController
+                        navController = navController,
+                        noteViewModel = noteViewModel
                     )
                 }
 

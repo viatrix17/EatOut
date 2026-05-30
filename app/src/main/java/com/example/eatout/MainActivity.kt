@@ -1,5 +1,6 @@
 package com.example.eatout
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,6 +29,8 @@ import com.example.eatout.ui.components.CustomTopBar
 import com.example.eatout.ui.theme.EatOutTheme
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.eatout.data.Note
+import com.example.eatout.ui.NoteViewModel
 import com.example.eatout.ui.components.CustomBottomBar
 import com.example.eatout.ui.navigation.AppNavHost
 import com.example.eatout.viewmodel.MainViewModel
@@ -37,13 +40,14 @@ class GlobalData {
         var restaurants = "error"
         var Flag = false
         var ListOfRestaurants: ArrayList<String> = arrayListOf()
-        var ListOfFavourites: ArrayList<String> = arrayListOf()
+        var ListOfFavourites: ArrayList<Note> = arrayListOf()
     }
 }
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
 
+    @SuppressLint("ViewModelConstructorInComposable")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -88,7 +92,9 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             isLoading = isLoading,
                             isTablet = isTablet,
+                            noteViewModel = NoteViewModel(),
                             modifier = Modifier.padding(innerPadding)
+
                         )
                     }
                 }
