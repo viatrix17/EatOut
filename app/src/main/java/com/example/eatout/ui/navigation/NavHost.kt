@@ -85,7 +85,8 @@ fun AppNavHost(
                 {
                     ToVisitScreen(
                         isTablet = isTablet,
-                        navController = navController
+                        navController = navController,
+                        noteViewModel = noteViewModel
                     )
                 }
 
@@ -93,7 +94,8 @@ fun AppNavHost(
                 {
                     DishesScreen(
                         isTablet = isTablet,
-                        navController = navController
+                        navController = navController,
+                        noteViewModel = noteViewModel
                     )
                 }
             }

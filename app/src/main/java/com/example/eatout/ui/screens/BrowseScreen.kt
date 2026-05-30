@@ -38,7 +38,7 @@ fun addToFavourite(string : String, noteViewModel : NoteViewModel){
     note.restauracja = string;
 
     noteViewModel.run {
-        addNote(note)
+        addNote(note, "favourites")
     }
 }
 

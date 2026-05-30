@@ -17,33 +17,33 @@ class NoteViewModel : ViewModel() {
     private val _notes = MutableStateFlow<List<Note>>(emptyList())
     val notes: StateFlow<List<Note>> = _notes.asStateFlow()
     // Funkcja uruchamiająca synchronizację danych z Firestore
-    fun startSync() {
+    fun startSync(collection : String) {
 // Rozpoczęcie obserwacji zmian w kolekcji "notes"
         listenerRegistration = repository.observeNotes(
 // Funkcja wywoływana po poprawnym pobraniu lub zmianie danych
             onDataChanged = { notes ->_notes.value = notes},// Aktualizacja stanu ViewModelu nową listą notatek },
 // Funkcja wywoływana w przypadku błędu
                 onError = { e ->e.printStackTrace()} // Wypisanie błędu w logach
-                )
+                , collection = collection)
             }
-    fun addNote(note: Note) {
+    fun addNote(note: Note, collection : String) {
         viewModelScope.launch {
-            repository.addNote(note)
+            repository.addNote(note, collection)
             Log.d("TAG", note.toString())
-            _notes.value = repository.getNotes() // Po dodaniu notatki ponownie pobieramy listę danych
+            _notes.value = repository.getNotes(collection) // Po dodaniu notatki ponownie pobieramy listę danych
             Log.d("TAG",notes.value.last().toString())
         }
     } // Funkcja dodająca nową notatkę do bazy – nic się tu nie zmienia
-    fun clearNotes(){
+    fun clearNotes(collection: String){
         viewModelScope.launch {
-            repository.clearNotes()
+            repository.clearNotes(collection)
             //Log.d("TAG", notes.value.last().toString())
-            _notes.value = repository.getNotes() // Po dodaniu notatki ponownie pobieramy listę danych
+            _notes.value = repository.getNotes(collection) // Po dodaniu notatki ponownie pobieramy listę danych
             //Log.d("TAG",notes.value.last().toString())
         }
     }
-    suspend fun getNotes(): List<Note> {
-        return repository.getNotes();
+    suspend fun getNotes(collection: String): List<Note> {
+        return repository.getNotes(collection);
     }
 // Funkcja wywoływana automatycznie przy usuwaniu ViewModelu
                     override fun onCleared() {

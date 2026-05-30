@@ -34,7 +34,7 @@ fun FavouritePhoneLayout(noteViewModel: NoteViewModel)
 {
     val scope = rememberCoroutineScope()
     LaunchedEffect(scope) {
-        GlobalData.ListOfFavourites = noteViewModel.getNotes() as ArrayList<Note>;
+        GlobalData.ListOfFavourites = noteViewModel.getNotes("favourites") as ArrayList<Note>;
     }
     LazyColumn(modifier = Modifier.fillMaxHeight()) {
         items(items = GlobalData.ListOfFavourites, itemContent = { item ->

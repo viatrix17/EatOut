@@ -14,11 +14,10 @@ class NoteRepository {
     private val db = FirebaseFirestore.getInstance()
     private var nextId = 0;
     // Odwołanie do kolekcji "notes" w bazie Firestore
-    private val notesCollection = db.collection("notes")
     // Funkcja dodająca nową notatkę do bazy; suspend oznacza, że funkcja działa asynchronicznie w korutynie
-    suspend fun addNote(note: Note) {
+    suspend fun addNote(note: Note, collection : String) {
 // Utworzenie nowego dokumentu z automatycznie generowanym ID
-        val docRef = notesCollection.document()
+        val docRef = db.collection(collection).document()
 // Skopiowanie obiektu note i przypisanie mu wygenerowanego ID dokumentu
         val noteWithId = note.copy(restauracja = note.restauracja)
         nextId+=1
@@ -27,26 +26,26 @@ class NoteRepository {
         docRef.set(noteWithId).await()
     }
     // Funkcja pobierająca wszystkie notatki z kolekcji "notes"
-    suspend fun getNotes(): List<Note> {
+    suspend fun getNotes(collection : String): List<Note> {
 // Pobranie wszystkich dokumentów z kolekcji
-        val snapshot = notesCollection.get().await()
+        val snapshot = db.collection(collection).get().await()
 // Zamiana dokumentów Firestore na obiekty klasy Note; mapNotNull pomija ewentualne błędne lub puste wyniki
         return snapshot.documents.mapNotNull { it.toObject(Note::class.java) }
     }
-    suspend fun clearNotes(){
-        val docRef = notesCollection.document()
-        val x = db.collection("notes").get()
+    suspend fun clearNotes(collection : String){
+        val docRef = db.collection(collection).document()
+        val x = db.collection(collection).get()
         x.addOnSuccessListener {
             for (document in it) {
-                db.collection("notes").document(document.id).delete()
+                db.collection(collection).document(document.id).delete()
             }
         }
         Log.d(TAG,x.toString())
     }
-    fun observeNotes(
+    fun observeNotes(collection : String,
         onDataChanged: (List<Note>) -> Unit, onError: (Exception) -> Unit): ListenerRegistration {
 // Dodanie listenera nasłuchującego zmiany w kolekcji "notes"
-        return notesCollection.addSnapshotListener { snapshot, error ->
+        return db.collection(collection).addSnapshotListener { snapshot, error ->
 // Sprawdzenie, czy podczas pobierania danych wystąpił błąd
             if (error != null) {
                 onError(error)
