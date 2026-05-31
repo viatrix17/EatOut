@@ -10,7 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.eatout.ui.screens.BrowseScreen
-import com.example.eatout.ui.screens.ClosestToYouScreen
+import com.example.eatout.ui.screens.ClosestScreen
 import com.example.eatout.ui.screens.DishesScreen
 import com.example.eatout.ui.screens.FavouriteScreen
 import com.example.eatout.ui.screens.HomeScreen
@@ -56,7 +56,7 @@ fun AppNavHost(
                     )
                 }
                 composable(route = "closest") {
-                    ClosestToYouScreen(
+                    ClosestScreen(
                         isTablet = isTablet,
                         navController = navController
                     )

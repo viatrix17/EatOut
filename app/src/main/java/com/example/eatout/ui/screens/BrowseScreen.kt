@@ -45,6 +45,7 @@ import com.example.eatout.viewmodel.Restaurant
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.example.eatout.ui.components.FilterBottomSheet
+import com.example.eatout.viewmodel.ListType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,6 +59,10 @@ fun BrowseScreen(
 
     LaunchedEffect(Unit) {
         viewModel.selectAll()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.setListType(ListType.ALL)
     }
 
     val listState = rememberLazyListState()
@@ -134,14 +139,6 @@ fun BrowsePhoneLayout(
             FilterBottomSheet(
                 onDismiss = { onFilterStateChange(false) }
             )
-
-//            ModalBottomSheet(
-//                onDismissRequest = { onFilterStateChange(false) }
-//            ) {
-//                Column(modifier = Modifier.padding(16.dp)) {
-//                    Text("Opcje filtrowania")
-//                }
-//            }
         }
     }
 }
