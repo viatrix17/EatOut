@@ -1,8 +1,12 @@
 package com.example.eatout.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 
 data class Restaurant( // mock class and data
     val id: Int,
@@ -30,10 +34,31 @@ class RestaurantViewModel : ViewModel() {
         Restaurant(14, "VietStreet", "Poznań, Głogowska", 4.6, "Wietnamska"),
         Restaurant(15, "Steakhouse Prime", "Poznań, Centrum", 4.9, "Amerykańska")
     )
+
+    private val _allRoutes = MutableStateFlow<List<Restaurant>>(emptyList())
     private val _currentRestaurants = MutableStateFlow<List<Restaurant>>(emptyList())
     val currentRestaurants = _currentRestaurants.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
+    val filteredRestaurants = combine(_currentRestaurants, _searchQuery) { current, query ->
+        if (query.isNotEmpty()) {
+            allRestaurants.filter { it.name.contains(query, ignoreCase = true) }
+        } else {
+            current
+        }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList())
+
+    fun onSearchQueryChange(newQuery: String) {
+        _searchQuery.value = newQuery
+    }
+
     fun selectAll() {
         _currentRestaurants.value = allRestaurants
+        _searchQuery.value = ""
     }
 }

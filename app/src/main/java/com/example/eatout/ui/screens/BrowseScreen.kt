@@ -1,15 +1,27 @@
 package com.example.eatout.ui.screens
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,43 +35,113 @@ import com.example.eatout.ui.components.RestaurantsList
 import com.example.eatout.ui.components.SimpleVerticalScrollbar
 import com.example.eatout.viewmodel.RestaurantViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import com.example.eatout.ui.components.FilterButton
 import com.example.eatout.viewmodel.Restaurant
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.example.eatout.ui.components.FilterBottomSheet
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BrowseScreen(
     viewModel: RestaurantViewModel = viewModel(),
     isTablet: Boolean,
     navController: NavHostController
 ) {
-    val restaurants by viewModel.currentRestaurants.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val restaurants by viewModel.filteredRestaurants.collectAsState()
+
     LaunchedEffect(Unit) {
         viewModel.selectAll()
     }
 
     val listState = rememberLazyListState()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     BrowsePhoneLayout(
         listState = listState,
-        data = restaurants
+        data = restaurants,
+        searchQuery = searchQuery,
+        onSearchQueryChange = { viewModel.onSearchQueryChange(it)},
+        keyboardController = keyboardController,
+        onFilterStateChange = { showBottomSheet = it },
+        showBottomSheet = showBottomSheet
     )
 }
+
 
 @Composable
 fun BrowsePhoneLayout(
     listState: LazyListState = rememberLazyListState(),
-    data: List<Restaurant>
+    data: List<Restaurant>,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    keyboardController: SoftwareKeyboardController?,
+    onFilterStateChange: (Boolean) -> Unit,
+    showBottomSheet: Boolean
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        RestaurantsList(
-            data = data,
-            onRestaurantSelected = {},
-            listState = listState
-        )
-        SimpleVerticalScrollbar(
+    Column {
+        Row(
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(2.dp),
-            listState = listState
-        )
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically)
+        {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { onSearchQueryChange(it) },
+                label = { Text("Browse restaurants") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(16.dp),
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        keyboardController?.hide()
+                    }
+                )
+            )
+            FilterButton(
+                text = "Filter",
+                onClick = { onFilterStateChange(true) }
+            )
+        }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            RestaurantsList(
+                data = data,
+                onRestaurantSelected = {},
+                listState = listState
+            )
+            SimpleVerticalScrollbar(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(2.dp),
+                listState = listState
+            )
+        }
+
+        if (showBottomSheet) {
+            FilterBottomSheet(
+                onDismiss = { onFilterStateChange(false) }
+            )
+
+//            ModalBottomSheet(
+//                onDismissRequest = { onFilterStateChange(false) }
+//            ) {
+//                Column(modifier = Modifier.padding(16.dp)) {
+//                    Text("Opcje filtrowania")
+//                }
+//            }
+        }
     }
 }

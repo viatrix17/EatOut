@@ -25,7 +25,7 @@ fun ReturnButton (
 ) {
     IconButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -33,4 +33,26 @@ fun ReturnButton (
             tint = MaterialTheme.colorScheme.onPrimary
         )
     }
+}
+
+@Composable
+fun FilterButton (
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+){
+        Button(
+            onClick = onClick,
+            modifier = modifier
+                .padding(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            shape = RoundedCornerShape(12.dp),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+        ) {
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = text, style = MaterialTheme.typography.labelLarge)
+        }
 }
