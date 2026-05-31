@@ -83,18 +83,36 @@ fun CustomBottomBar(
     ) {
         Spacer(Modifier.weight(1f))
         // favs
-        IconButton(onClick = { navController.navigate("favourite") }) {
+        IconButton(onClick = {
+            navController.navigate("favourite")
+            {
+                popUpTo("home") { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
+        }) {
             Icon(Icons.Default.Star, contentDescription = "Menu")
         }
         Spacer(Modifier.weight(1f))
         // restaurants
-        IconButton(onClick = { navController.navigate("to-visit") }) {
+        IconButton(onClick = { navController.navigate("to-visit"){
+
+                popUpTo("home") { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+
+        } }) {
             Icon(Icons.Default.Restaurant, contentDescription = "restaurants to visit")
         }
         Spacer(Modifier.weight(1f))
 
         // dishes
-        IconButton(onClick = { navController.navigate("dishes") }) {
+        IconButton(onClick = { navController.navigate("dishes")
+        {
+            popUpTo("home") { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }}) {
             Icon(Icons.Default.LunchDining, contentDescription = "Saved dishes")
         }
         Spacer(Modifier.weight(1f))
