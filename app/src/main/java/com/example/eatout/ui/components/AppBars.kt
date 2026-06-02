@@ -31,6 +31,8 @@ fun CustomTopBar(
 //    isDarkTheme: Boolean,
 //    onToggleTheme: () -> Unit,
     onBackClick: () -> Unit,
+    onMenuClick: () -> Unit,
+    onNotifClick: () -> Unit,
     showBackButton: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -51,7 +53,7 @@ fun CustomTopBar(
                     modifier = Modifier.padding(8.dp)
                 )
             } else {
-                IconButton(onClick = {  }) {
+                IconButton(onClick = onMenuClick ) {
                     Icon(
                         imageVector = Icons.Default.Menu,
                         contentDescription = "Menu",
@@ -61,7 +63,7 @@ fun CustomTopBar(
             }
         },
         actions = {
-            IconButton(onClick = {  }) {
+            IconButton(onClick = onNotifClick) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
                     contentDescription = "Norifications",

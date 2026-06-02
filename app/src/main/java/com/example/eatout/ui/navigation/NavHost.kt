@@ -6,6 +6,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,8 +15,11 @@ import com.example.eatout.ui.screens.ClosestScreen
 import com.example.eatout.ui.screens.DishesScreen
 import com.example.eatout.ui.screens.FavouriteScreen
 import com.example.eatout.ui.screens.HomeScreen
+import com.example.eatout.ui.screens.LocationSettingsScreen
+import com.example.eatout.ui.screens.ModeSettingsScreen
 import com.example.eatout.ui.screens.RecommendationScreen
 import com.example.eatout.ui.screens.ToVisitScreen
+import com.example.eatout.viewmodel.MainViewModel
 
 @Composable
 fun AppNavHost(
@@ -25,7 +29,7 @@ fun AppNavHost(
     isTablet: Boolean,
     modifier: Modifier = Modifier
 ) {
-
+    val viewModel: MainViewModel = viewModel()
     Box(modifier = Modifier) {
         NavHost(
                 navController = navController,
@@ -90,6 +94,20 @@ fun AppNavHost(
                     DishesScreen(
                         isTablet = isTablet,
                         navController = navController
+                    )
+                }
+                composable(route = "location-settings")
+                {
+                    LocationSettingsScreen(
+                        isTablet = isTablet,
+                        viewModel = viewModel
+                    )
+                }
+                composable(route = "mode-settings")
+                {
+                    ModeSettingsScreen(
+                        isTablet = isTablet,
+                        viewModel = viewModel
                     )
                 }
             }
