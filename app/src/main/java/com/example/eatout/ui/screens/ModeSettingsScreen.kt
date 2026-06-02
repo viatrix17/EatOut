@@ -6,30 +6,39 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.example.eatout.ui.components.SettingsButton
 import com.example.eatout.ui.components.WideButton
 import com.example.eatout.viewmodel.MainViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun ModeSettingsScreen(
     isTablet: Boolean,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
 ) {
-    val isDarkMode = false //by viewModel.isDarkMode.collectAsState()
+    val isDarkTheme by viewModel.isDarkThemeCustom.collectAsState()
 
-    ModeSettingsPhoneLayout()
+    ModeSettingsPhoneLayout(
+        onLightModeClick = { viewModel.changeToLightMode() },
+        onDarkModeClick = { viewModel.changeToDarkMode() },
+        onSystemModeClick = { viewModel.enableSystemMode() }
+    )
 }
 
 @Composable
-fun ModeSettingsPhoneLayout(){
+fun ModeSettingsPhoneLayout(
+    onLightModeClick: () -> Unit,
+    onDarkModeClick: () -> Unit,
+    onSystemModeClick: () -> Unit
+){
     Column(
         modifier = Modifier.fillMaxWidth().padding(16.dp)
     ){
         WideButton(
-            onClick = {/* TO DO zmiana na tryb jasny */},
+            onClick = onLightModeClick,
             label =  "Light mode"
         )
         HorizontalDivider(
@@ -37,7 +46,7 @@ fun ModeSettingsPhoneLayout(){
             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
         )
         WideButton(
-            onClick = {/* TO DO zmiana na tryb ciemny */},
+            onClick = onDarkModeClick,
             label =  "Dark mode"
         )
         HorizontalDivider(
@@ -45,7 +54,7 @@ fun ModeSettingsPhoneLayout(){
             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
         )
         WideButton(
-            onClick = {/* TO DO zmiana na zależne od ustawień telefonu */},
+            onClick = onSystemModeClick,
             label =  "Use system settings"
         )
         HorizontalDivider(

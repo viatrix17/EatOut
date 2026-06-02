@@ -63,4 +63,5 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
     implementation("androidx.activity:activity-ktx:1.9.0") // dla 'by viewModels()'
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }

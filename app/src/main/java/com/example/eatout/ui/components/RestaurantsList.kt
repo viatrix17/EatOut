@@ -82,7 +82,7 @@ fun RestaurantCard(restaurant: Restaurant, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_placeholder),
+                painter = painterResource(id = R.drawable.ic_placeholder), // TO DO dodać biały ic_placeholder
                 contentDescription = "Logo",
                 modifier = Modifier
                     .size(60.dp)
