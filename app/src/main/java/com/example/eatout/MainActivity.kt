@@ -98,53 +98,57 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
-                        ModalNavigationDrawer(
-                            drawerState = rightDrawerState,
-                            drawerContent = {
-                                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                                    AppRightDrawer(
-                                        onCloseDrawer = { scope.launch { rightDrawerState.close() } },
-                                        modifier = drawerModifier
-                                    )
+                        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                            ModalNavigationDrawer(
+                                drawerState = rightDrawerState,
+                                drawerContent = {
+                                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                                        AppRightDrawer(
+                                            onCloseDrawer = { scope.launch { rightDrawerState.close() } },
+                                            modifier = drawerModifier
+                                        )
+                                    }
                                 }
-                            }
-                        ) {
-                            Scaffold(
-                                modifier = Modifier.fillMaxSize(),
-                                topBar = {
-                                    val isHome = currentDestination?.route == "home"
-                                    val isNotReady = currentDestination == null
-                                    CustomTopBar(
-                                        title = topBarTitle,
-                                        onMenuClick = {
-                                            scope.launch {
-                                                leftDrawerState.open()
-                                            }
+                            ) {
+                                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                                    Scaffold(
+                                        modifier = Modifier.fillMaxSize(),
+                                        topBar = {
+                                            val isHome = currentDestination?.route == "home"
+                                            val isNotReady = currentDestination == null
+                                            CustomTopBar(
+                                                title = topBarTitle,
+                                                onMenuClick = {
+                                                    scope.launch {
+                                                        leftDrawerState.open()
+                                                    }
+                                                },
+                                                onNotifClick = {
+                                                    scope.launch {
+                                                        rightDrawerState.open()
+                                                    }
+                                                },
+                                                onBackClick = {
+                                                    navController.popBackStack()
+                                                },
+                                                showBackButton = !isHome && !isNotReady,
+                                                modifier = Modifier
+                                            )
                                         },
-                                        onNotifClick = {
-                                            scope.launch {
-                                                rightDrawerState.open()
-                                            }
-                                        },
-                                        onBackClick = {
-                                            navController.popBackStack()
-                                        },
-                                        showBackButton = !isHome && !isNotReady,
-                                        modifier = Modifier
-                                    )
-                                },
-                                bottomBar = {
-                                    CustomBottomBar(
-                                        navController = navController
-                                    )
+                                        bottomBar = {
+                                            CustomBottomBar(
+                                                navController = navController
+                                            )
+                                        }
+                                    ) { innerPadding ->
+                                        AppNavHost(
+                                            navController = navController,
+                                            isLoading = isLoading,
+                                            isTablet = isTablet,
+                                            modifier = Modifier.padding(innerPadding)
+                                        )
+                                    }
                                 }
-                            ) { innerPadding ->
-                                AppNavHost(
-                                    navController = navController,
-                                    isLoading = isLoading,
-                                    isTablet = isTablet,
-                                    modifier = Modifier.padding(innerPadding)
-                                )
                             }
                         }
                     }
