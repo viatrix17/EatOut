@@ -31,6 +31,9 @@ class ApiService {
 
                     GlobalData.Companion.restaurants = jsonResponse
                     Post.Companion.FindRestaurants(jsonResponse)
+                    Post.Companion.FindLantiudes(jsonResponse)
+                    Post.Companion.FindLontitudes(jsonResponse)
+                    Post.Companion.CalculateDistance()
 
                 } catch (e: Exception) {
                     println("Błąd pobierania danych Retrofit: ${e.message}")

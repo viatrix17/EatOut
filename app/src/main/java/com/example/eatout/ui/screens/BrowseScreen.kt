@@ -49,6 +49,7 @@ fun BrowsePhoneLayout(noteViewModel : NoteViewModel)
         LocalTextStyle provides LocalTextStyle.current.copy(fontSize = 20.sp)
     ) {
 
+
     LazyColumn(modifier = Modifier.fillMaxHeight()) {
         items(items = GlobalData.ListOfRestaurants, itemContent = { item ->
             Box(modifier = Modifier

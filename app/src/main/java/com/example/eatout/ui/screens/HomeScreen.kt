@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import androidx.navigation.NavHostController
+import com.example.eatout.GlobalData
 import com.example.eatout.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices

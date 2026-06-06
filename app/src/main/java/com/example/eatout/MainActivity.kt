@@ -60,6 +60,9 @@ class GlobalData {
         var Flag = false
         var ListOfRestaurants: ArrayList<String> = arrayListOf()
         var ListOfFavourites: ArrayList<Note> = arrayListOf()
+        var RestaurantsLontitudes : ArrayList<String> = arrayListOf()
+        var RestaurantsLantitudes : ArrayList<String> = arrayListOf()
+        var Distances : ArrayList<Double> = arrayListOf()
         var ListOfRestaurantsToVisit: ArrayList<Note> = arrayListOf()
 
         var ListOfDishes: ArrayList<Note> = arrayListOf()
