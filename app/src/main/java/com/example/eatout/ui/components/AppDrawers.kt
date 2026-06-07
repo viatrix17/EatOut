@@ -31,8 +31,6 @@ import androidx.navigation.NavHostController
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Alignment
 
-// TO DO zmniejszyć szerokość drawerów
-
 @Composable
 fun AppLeftDrawer(
     navController: NavHostController,
@@ -120,7 +118,7 @@ data class Notification(
 )
 
 @Composable
-fun AppRightDrawer( // TO DO dodać po prawej stronie
+fun AppRightDrawer(
     onCloseDrawer: () -> Unit,
     modifier: Modifier = Modifier,
 //    notifications: List<Notification>

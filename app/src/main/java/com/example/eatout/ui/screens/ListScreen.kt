@@ -46,23 +46,31 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.example.eatout.ui.components.FilterBottomSheet
 import com.example.eatout.viewmodel.ListType
+import com.example.eatout.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BrowseScreen(
+fun RestaurantListScreen(
     viewModel: RestaurantViewModel = viewModel(),
     isTablet: Boolean,
-    navController: NavHostController
+    navController: NavHostController,
+    listType: String = "ALL",
+    showDistance: Boolean = false
 ) {
+    val targetType = when (listType) {
+        "FAVORITES" -> ListType.FAVORITES
+        "TO_VISIT" -> ListType.TO_VISIT
+        else -> ListType.ALL
+    }
+
     val searchQuery by viewModel.searchQuery.collectAsState()
     val restaurants by viewModel.filteredRestaurants.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.selectAll()
     }
-
     LaunchedEffect(Unit) {
-        viewModel.setListType(ListType.ALL)
+        viewModel.setListType(targetType)
     }
 
     val listState = rememberLazyListState()
@@ -70,27 +78,31 @@ fun BrowseScreen(
 
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    BrowsePhoneLayout(
+    RestaurantListScreenPhoneLayout(
         listState = listState,
         data = restaurants,
         searchQuery = searchQuery,
         onSearchQueryChange = { viewModel.onSearchQueryChange(it)},
         keyboardController = keyboardController,
         onFilterStateChange = { showBottomSheet = it },
-        showBottomSheet = showBottomSheet
+        showBottomSheet = showBottomSheet,
+        viewModel = viewModel,
+        showDistance = showDistance
     )
 }
 
 
 @Composable
-fun BrowsePhoneLayout(
+fun RestaurantListScreenPhoneLayout(
     listState: LazyListState = rememberLazyListState(),
     data: List<Restaurant>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     keyboardController: SoftwareKeyboardController?,
     onFilterStateChange: (Boolean) -> Unit,
-    showBottomSheet: Boolean
+    showBottomSheet: Boolean,
+    viewModel: RestaurantViewModel,
+    showDistance: Boolean
 ) {
     Column {
         Row(
@@ -125,7 +137,9 @@ fun BrowsePhoneLayout(
             RestaurantsList(
                 data = data,
                 onRestaurantSelected = {},
-                listState = listState
+                listState = listState,
+                viewModel = viewModel,
+                showDistance = showDistance
             )
             SimpleVerticalScrollbar(
                 modifier = Modifier

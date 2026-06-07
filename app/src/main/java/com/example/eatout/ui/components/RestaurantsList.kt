@@ -1,5 +1,6 @@
 package com.example.eatout.ui.components
 
+import android.R.attr.data
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,16 +39,45 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.eatout.R
+import com.example.eatout.viewmodel.RestaurantViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun RestaurantsList(
     data: List<Restaurant>,
     onRestaurantSelected: (Restaurant) -> Unit,
-    listState: LazyListState = rememberLazyListState()
+    listState: LazyListState = rememberLazyListState(),
+    viewModel: RestaurantViewModel,
+    showDistance: Boolean = false
 ){
+    var showAlreadyAddedDialog by remember { mutableStateOf(false) }
+
+    if (showAlreadyAddedDialog) {
+        AlertDialog(
+            onDismissRequest = { showAlreadyAddedDialog = false },
+            title = { Text("Restaurant Added") },
+            text = { Text("This restaurant is already on your To Visit List") },
+            confirmButton = {
+                TextButton(onClick = { showAlreadyAddedDialog = false }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showAlreadyAddedDialog = false
+                }) { Text("Anuluj") }
+            }
+
+        )
+    }
+
     LazyColumn(
         state = listState,
         modifier = Modifier.fillMaxSize(),
@@ -57,14 +87,37 @@ fun RestaurantsList(
         items(data, key = { it.id }) { restaurant ->
             RestaurantCard(
                 restaurant = restaurant,
-                onClick = { onRestaurantSelected(restaurant) }
+                onClick = { onRestaurantSelected(restaurant) },
+                viewModel = viewModel,
+                onAddClick = {
+                    if (restaurant.isToVisit) {
+                        showAlreadyAddedDialog = true
+                    } else {
+                        viewModel.toggleToVisit(restaurant.id)
+                    }
+                },
+                showDistance = showDistance
             )
         }
     }
 }
 
 @Composable
-fun RestaurantCard(restaurant: Restaurant, onClick: () -> Unit) {
+fun RestaurantCard(
+    restaurant: Restaurant,
+    onClick: () -> Unit,
+    viewModel: RestaurantViewModel,
+    onAddClick: () -> Unit,
+    showDistance: Boolean
+) {
+    val distance = if (showDistance){
+        100 // MOCK DATA
+    }
+//    {
+//        viewModel.calculateDistanceFor(restaurant.id) // TODO
+//    }
+        else null
+
     Card(
         onClick = onClick,
         modifier = Modifier
@@ -99,20 +152,23 @@ fun RestaurantCard(restaurant: Restaurant, onClick: () -> Unit) {
                 Text(text = restaurant.location, style = MaterialTheme.typography.bodySmall)
                 Text(text = restaurant.cuisineType, style = MaterialTheme.typography.labelSmall)
             }
-            IconButton(onClick = { /* TODO: Dodaj do TO VISIT */ }) {
+            if (distance != null) Text("DIST") // TODO ADD REAL DISTANCE
+            IconButton(onClick = onAddClick) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Ulubione",
                     modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = if (!restaurant.isToVisit) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
             }
-            IconButton(onClick = { /* TODO: Dodaj do ulubionych */ }) {
+            IconButton(onClick = { viewModel.toggleFavourite(restaurant.id) }) {
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = "Ulubione",
                     modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = if (restaurant.isFavorite) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
             }
         }

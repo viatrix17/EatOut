@@ -195,4 +195,12 @@ class RestaurantViewModel : ViewModel() {
         _searchQuery.value = ""
     }
 
+    fun toggleFavourite(id: Int){
+        // TO DO DODAĆ ŻEBY ZMIENIAŁO FAVOURITE - wywoływanie funkcji z modelu (klasy)
+    }
+
+    fun toggleToVisit(id: Int){
+        // TO DO DODAĆ ŻEBY ZMIENIAŁO FAVOURITE - wywoływanie funkcji z modelu (klasy)
+    }
+
 }

@@ -10,15 +10,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.eatout.ui.screens.BrowseScreen
-import com.example.eatout.ui.screens.ClosestScreen
 import com.example.eatout.ui.screens.DishesScreen
-import com.example.eatout.ui.screens.FavouriteScreen
 import com.example.eatout.ui.screens.HomeScreen
 import com.example.eatout.ui.screens.LocationSettingsScreen
 import com.example.eatout.ui.screens.ModeSettingsScreen
 import com.example.eatout.ui.screens.RecommendationScreen
-import com.example.eatout.ui.screens.ToVisitScreen
+import com.example.eatout.ui.screens.RestaurantListScreen
 import com.example.eatout.viewmodel.MainViewModel
 
 @Composable
@@ -54,15 +51,16 @@ fun AppNavHost(
                 }
 
                 composable(route = "browse") {
-                    BrowseScreen(
+                    RestaurantListScreen(
                         isTablet = isTablet,
                         navController = navController
                     )
                 }
                 composable(route = "closest") {
-                    ClosestScreen(
+                    RestaurantListScreen(
                         isTablet = isTablet,
-                        navController = navController
+                        navController = navController,
+                        showDistance = true
                     )
                 }
                 composable(route = "recommendation")
@@ -75,17 +73,19 @@ fun AppNavHost(
 
                 composable(route = "favourite")
                 {
-                    FavouriteScreen(
+                    RestaurantListScreen(
                         isTablet = isTablet,
-                        navController = navController
+                        navController = navController,
+                        listType = "FAVORITES"
                     )
                 }
 
                 composable(route = "to-visit")
                 {
-                    ToVisitScreen(
+                    RestaurantListScreen(
                         isTablet = isTablet,
-                        navController = navController
+                        navController = navController,
+                        listType = "TO_VISIT"
                     )
                 }
 
