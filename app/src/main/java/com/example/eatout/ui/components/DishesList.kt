@@ -1,6 +1,6 @@
 package com.example.eatout.ui.components
 
-import android.R.attr.data
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,15 +8,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,14 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.eatout.viewmodel.Restaurant
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Star
@@ -45,27 +35,27 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.eatout.R
-import com.example.eatout.viewmodel.RestaurantViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.eatout.viewmodel.Dish
+import com.example.eatout.viewmodel.DishViewModel
 
 @Composable
-fun RestaurantsList(
-    data: List<Restaurant>,
-    onRestaurantSelected: (Restaurant) -> Unit,
+fun DishesList(
+    data: List<Dish>,
     listState: LazyListState = rememberLazyListState(),
-    viewModel: RestaurantViewModel,
-    showDistance: Boolean = false
+    viewModel: DishViewModel
 ){
+
+
     var showAlreadyAddedDialog by remember { mutableStateOf(false) }
 
     if (showAlreadyAddedDialog) {
         AlertDialog(
             onDismissRequest = { showAlreadyAddedDialog = false },
-            title = { Text("Restaurant Added") },
-            text = { Text("This restaurant is already on your To Visit List") },
+            title = { Text("Dish Added") },
+            text = { Text("This dish is already on your To Try List") },
             confirmButton = {
                 TextButton(onClick = { showAlreadyAddedDialog = false }) { Text("OK") }
             }
@@ -78,39 +68,31 @@ fun RestaurantsList(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(16.dp)
     ) {
-        items(data, key = { it.id }) { restaurant ->
-            RestaurantCard(
-                restaurant = restaurant,
-                onClick = { onRestaurantSelected(restaurant) },
+        items(data, key = { it.id }) { dish ->
+            DishCard(
+                dish = dish,
+                onClick = { }, // TODO POP UP ŻEBY WIDZIEĆ WSZYSTKO },
                 viewModel = viewModel,
                 onAddClick = {
-                    if (restaurant.isToVisit) {
+                    if (dish.isToTry) {
                         showAlreadyAddedDialog = true
                     } else {
-                        viewModel.toggleToVisit(restaurant.id)
+                        viewModel.toggleToVisit(dish.id)
                     }
                 },
-                showDistance = showDistance
             )
         }
     }
 }
 
 @Composable
-fun RestaurantCard(
-    restaurant: Restaurant,
+fun DishCard(
+    dish: Dish,
     onClick: () -> Unit,
-    viewModel: RestaurantViewModel,
-    onAddClick: () -> Unit,
-    showDistance: Boolean
+    viewModel: DishViewModel,
+    onAddClick: () -> Unit
 ) {
-    val distance = if (showDistance){
-        100 // MOCK DATA
-    }
-//    {
-//        viewModel.calculateDistanceFor(restaurant.id) // TODO
-//    }
-        else null
+
 
     Card(
         onClick = onClick,
@@ -142,27 +124,26 @@ fun RestaurantCard(
                     .weight(1f)
                     .padding(horizontal = 12.dp)
             ) {
-                Text(text = restaurant.name, style = MaterialTheme.typography.titleMedium)
-                Text(text = restaurant.location, style = MaterialTheme.typography.bodySmall)
-                Text(text = restaurant.cuisineType, style = MaterialTheme.typography.labelSmall)
+                Text(text = dish.name, style = MaterialTheme.typography.titleMedium)
+                Text(text = dish.ingredients, style = MaterialTheme.typography.bodySmall)
             }
-            if (distance != null) Text("DIST") // TODO ADD REAL DISTANCE
+
             IconButton(onClick = onAddClick) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Ulubione",
                     modifier = Modifier.size(24.dp),
-                    tint = if (!restaurant.isToVisit) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    tint = if (!dish.isToTry) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
             }
-            IconButton(onClick = { viewModel.toggleFavourite(restaurant.id) }) {
+            IconButton(onClick = { viewModel.toggleFavourite(dish.id) }) {
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = "Ulubione",
                     modifier = Modifier.size(24.dp),
-                    tint = if (restaurant.isFavorite) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    tint = if (dish.isFavorite) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
             }
         }
