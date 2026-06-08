@@ -71,6 +71,16 @@ fun DetailsScreen(
         )
     }
 
+    var selectedDish by remember { mutableStateOf<Dish?>(null) }
+
+    selectedDish?.let { dish ->
+        CustomAlertDialog(
+            onDismissRequest = { selectedDish = null },
+            title = dish.name,
+            message = "Ingredients: ${dish.ingredients}"
+        )
+    }
+
     val listState = rememberLazyListState()
 
     val currentRestaurant = restaurantViewModel.getRestaurantById(restaurantId)
@@ -97,7 +107,9 @@ fun DetailsScreen(
                     dishViewModel.toggleToTry(dish.id)
                 }
             },
-            listState = listState
+            listState = listState,
+            onClick = { dish ->
+                selectedDish = dish }
         )
     } else {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -116,6 +128,7 @@ fun DetailsPhoneLayout(
     onAddRestaurantClick: (Restaurant) -> Unit,
     onAddDishClick: (Dish) -> Unit,
     listState: LazyListState = rememberLazyListState(),
+    onClick: (Dish) -> Unit
 ){
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
@@ -148,12 +161,13 @@ fun DetailsPhoneLayout(
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column() {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
                         Text(
                             "${restaurant.location}",
                             style = MaterialTheme.typography.bodyLarge,
@@ -225,7 +239,7 @@ fun DetailsPhoneLayout(
         items(dishes, key = { it.id }) { dish ->
             DishCard(
                 dish = dish,
-                onClick = {},
+                onClick = { onClick(dish) },
                 viewModel = dishViewModel,
                 onAddClick = { onAddDishClick(dish) }
             )

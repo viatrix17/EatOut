@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import com.example.eatout.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.style.TextOverflow
 import com.example.eatout.viewmodel.Dish
 import com.example.eatout.viewmodel.DishViewModel
 
@@ -51,11 +52,21 @@ fun DishesList(
 
     var showAlreadyAddedDialog by remember { mutableStateOf(false) }
 
+    var selectedDish by remember { mutableStateOf<Dish?>(null) }
+
     if (showAlreadyAddedDialog) {
         CustomAlertDialog(
             onDismissRequest = { showAlreadyAddedDialog = false },
             title = "Dish Added",
             message = "This dish is already on your To Try List"
+        )
+    }
+
+    selectedDish?.let { dish ->
+        CustomAlertDialog(
+            onDismissRequest = { selectedDish = null },
+            title = dish.name,
+            message = "Ingredients: ${dish.ingredients}"
         )
     }
 
@@ -68,7 +79,7 @@ fun DishesList(
         items(data, key = { it.id }) { dish ->
             DishCard(
                 dish = dish,
-                onClick = { }, // TODO POP UP ŻEBY WIDZIEĆ WSZYSTKO },
+                onClick = { selectedDish = dish },
                 viewModel = viewModel,
                 onAddClick = {
                     if (dish.isToTry) {
@@ -121,8 +132,26 @@ fun DishCard(
                     .weight(1f)
                     .padding(horizontal = 12.dp)
             ) {
-                Text(text = dish.name, style = MaterialTheme.typography.titleMedium)
-                Text(text = dish.ingredients, style = MaterialTheme.typography.bodySmall)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Text(
+                        text = dish.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                    Text(
+                        text = "${dish.price} zł",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+                Text(text = dish.ingredients,
+                    maxLines = 2,
+                    style = MaterialTheme.typography.bodySmall,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
 
             IconButton(onClick = onAddClick) {
