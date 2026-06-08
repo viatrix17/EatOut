@@ -1,5 +1,6 @@
 package com.example.eatout.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -19,6 +20,7 @@ import androidx.navigation.NavHostController
 import com.example.eatout.data.Note
 import com.example.eatout.model.Post
 import com.example.eatout.ui.NoteViewModel
+import com.example.eatout.viewmodel.Restaurant
 import com.example.eatout.viewmodel.RestaurantViewModel
 
 @Composable
@@ -30,23 +32,23 @@ fun BrowseScreen(
     BrowsePhoneLayout(noteViewModel)
 }
 
-fun addToFavourite(nazwa: String, lokalizacja: String, Tagi: List<String>, lan: Double, lon: Double, noteViewModel: NoteViewModel){
+fun addToFavourite(rest : Restaurant, noteViewModel: NoteViewModel){
     var note : Note = Note()
-    note.restauracja = nazwa;
-    note.lokalizacja = lokalizacja
-    note.tagi = Tagi.toTypedArray()
-    note.lon=lon
-    note.lan=lan
-
+    note.restauracja = rest.name;
+    note.lokalizacja = rest.location
+    note.tagi = Post.returnTag(rest.name)
+    note.lon=rest.lon
+    note.lan=rest.lon
+    Log.d("TAG", "added something")
     noteViewModel.run {
         addNote(note, "favourites")
     }
 }
-fun addToVisit(nazwa : String, lokalizacja : String, Tagi : Array<String>, lan : Double, lon : Double, noteViewModel : NoteViewModel){
+fun addToVisit(nazwa : String, lokalizacja : String, Tagi : List<String>, lan : Double, lon : Double, noteViewModel : NoteViewModel){
     var note : Note = Note()
     note.restauracja = nazwa;
     note.lokalizacja = lokalizacja
-    note.tagi = Tagi.copyOf()
+    note.tagi = Tagi
     note.lon=lon
     note.lan=lan
 
@@ -67,7 +69,7 @@ fun BrowsePhoneLayout(noteViewModel : NoteViewModel)
         items(items = RestaurantViewModel.allRestaurants, itemContent = { item ->
             Box(modifier = Modifier
                 .fillMaxWidth()
-                .clickable{addToFavourite(item.name,item.location,Post.returnTag(item.name),item.lan,item.lon,noteViewModel)},
+                .clickable{addToFavourite(item,noteViewModel)},
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
