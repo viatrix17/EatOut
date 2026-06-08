@@ -14,6 +14,7 @@ data class Restaurant( // mock class and data
     val location: String,
     val rating: Double,
     val cuisineType: String,
+    val tags: List<String>,
     val isToVisit: Boolean = false,
     val isFavorite: Boolean = false
 )
@@ -22,141 +23,21 @@ enum class ListType { ALL, TO_VISIT, FAVORITES }
 
 class RestaurantViewModel : ViewModel() {
     private val allRestaurants = listOf(
-        Restaurant(
-            1,
-            "Pizzeria Da Grasso",
-            "Poznań, Głogowska",
-            4.5,
-            "Włoska",
-            isToVisit = true,
-            isFavorite = true
-        ),
-        Restaurant(
-            2,
-            "Restauracja Ratuszowa",
-            "Poznań, Stary Rynek",
-            4.8,
-            "Polska",
-            isToVisit = false,
-            isFavorite = true
-        ),
-        Restaurant(
-            3,
-            "Sushi Nami",
-            "Poznań, Jeżyce",
-            4.2,
-            "Japońska",
-            isToVisit = true,
-            isFavorite = false
-        ),
-        Restaurant(
-            4,
-            "Burgerownia Stacja",
-            "Poznań, Wilda",
-            4.6,
-            "Amerykańska",
-            isToVisit = true,
-            isFavorite = false
-        ),
-        Restaurant(
-            5,
-            "Falafel House",
-            "Poznań, Centrum",
-            4.0,
-            "Bliskowschodnia",
-            isToVisit = false,
-            isFavorite = false
-        ),
-        Restaurant(
-            6,
-            "Tajski Wok",
-            "Poznań, Garbary",
-            4.7,
-            "Tajska",
-            isToVisit = true,
-            isFavorite = true
-        ),
-        Restaurant(
-            7,
-            "La Rambla",
-            "Poznań, Śródka",
-            4.4,
-            "Hiszpańska",
-            isToVisit = false,
-            isFavorite = false
-        ),
-        Restaurant(
-            8,
-            "Pierogarnia u Mamy",
-            "Poznań, Jeżyce",
-            4.9,
-            "Polska",
-            isToVisit = true,
-            isFavorite = true
-        ),
-        Restaurant(
-            9,
-            "Vegan Ramen Shop",
-            "Poznań, Centrum",
-            4.8,
-            "Japońska",
-            isToVisit = false,
-            isFavorite = true
-        ),
-        Restaurant(
-            10,
-            "Kebab u Turka",
-            "Poznań, Grunwald",
-            3.8,
-            "Turecka",
-            isToVisit = false,
-            isFavorite = false
-        ),
-        Restaurant(
-            11,
-            "Greckie Smaki",
-            "Poznań, Łazarz",
-            4.3,
-            "Grecka",
-            isToVisit = true,
-            isFavorite = false
-        ),
-        Restaurant(
-            12,
-            "Francuska Bagietka",
-            "Poznań, Rataje",
-            4.1,
-            "Francuska",
-            isToVisit = false,
-            isFavorite = false
-        ),
-        Restaurant(
-            13,
-            "Indyjskie Curry",
-            "Poznań, Wilda",
-            4.5,
-            "Indyjska",
-            isToVisit = true,
-            isFavorite = false
-        ),
-        Restaurant(
-            14,
-            "VietStreet",
-            "Poznań, Głogowska",
-            4.6,
-            "Wietnamska",
-            isToVisit = true,
-            isFavorite = false
-        ),
-        Restaurant(
-            15,
-            "Steakhouse Prime",
-            "Poznań, Centrum",
-            4.9,
-            "Amerykańska",
-            isToVisit = false,
-            isFavorite = true
-        )
+        Restaurant(1, "Pizzeria Da Grasso", "Poznań, Głogowska", 4.5, "Włoska", listOf("włoskie", "pizza")),
+        Restaurant(2, "Restauracja Ratuszowa", "Poznań, Stary Rynek", 4.8, "Polska", listOf("klasyczne", "restauracja")),
+        Restaurant(3, "Sushi Nami", "Poznań, Jeżyce", 4.2, "Japońska", listOf("azjatyckie", "sushi-bar")),
+        Restaurant(4, "Burgerownia Stacja", "Poznań, Wilda", 4.6, "Amerykańska", listOf("street-food", "burgery")),
+        Restaurant(5, "Falafel House", "Poznań, Centrum", 4.0, "Bliskowschodnia", listOf("wegetariańskie", "street-food")),
+        Restaurant(6, "Tajski Wok", "Poznań, Garbary", 4.7, "Tajska", listOf("azjatyckie", "street-food")),
+        Restaurant(7, "La Rambla", "Poznań, Śródka", 4.4, "Hiszpańska", listOf("tapas-bar", "klimatyczne")),
+        Restaurant(8, "Pierogarnia u Mamy", "Poznań, Jeżyce", 4.9, "Polska", listOf("domowe", "śniadaniownia")),
+        Restaurant(9, "Vegan Ramen Shop", "Poznań, Centrum", 4.8, "Japońska", listOf("azjatyckie", "wegetariańskie")),
+        Restaurant(10, "Kebab u Turka", "Poznań, Grunwald", 3.8, "Turecka", listOf("street-food", "fast-food")),
+        Restaurant(11, "Greckie Smaki", "Poznań, Łazarz", 4.3, "Grecka", listOf("klasyczne", "wegetariańskie")),
+        Restaurant(12, "Francuska Bagietka", "Poznań, Rataje", 4.1, "Francuska", listOf("kawiarnia", "śniadaniownia")),
+        Restaurant(13, "Indyjskie Curry", "Poznań, Wilda", 4.5, "Indyjska", listOf("azjatyckie", "klasyczne")),
+        Restaurant(14, "VietStreet", "Poznań, Głogowska", 4.6, "Wietnamska", listOf("azjatyckie", "street-food")),
+        Restaurant(15, "Steakhouse Prime", "Poznań, Centrum", 4.9, "Amerykańska", listOf("steakhouse", "klasyczne"))
     )
 
     private val _allRestaurants = MutableStateFlow<List<Restaurant>>(emptyList())
@@ -193,6 +74,10 @@ class RestaurantViewModel : ViewModel() {
     fun selectAll() {
         _currentRestaurants.value = allRestaurants
         _searchQuery.value = ""
+    }
+
+    fun getRestaurantById(id: Int): Restaurant? {
+        return allRestaurants.find { it.id == id }
     }
 
     fun toggleFavourite(id: Int){

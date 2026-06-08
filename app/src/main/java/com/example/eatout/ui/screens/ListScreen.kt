@@ -79,6 +79,7 @@ fun RestaurantListScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
 
     RestaurantListScreenPhoneLayout(
+        navController = navController,
         listState = listState,
         data = restaurants,
         searchQuery = searchQuery,
@@ -94,6 +95,7 @@ fun RestaurantListScreen(
 
 @Composable
 fun RestaurantListScreenPhoneLayout(
+    navController: NavHostController,
     listState: LazyListState = rememberLazyListState(),
     data: List<Restaurant>,
     searchQuery: String,
@@ -136,7 +138,7 @@ fun RestaurantListScreenPhoneLayout(
         Box(modifier = Modifier.fillMaxSize()) {
             RestaurantsList(
                 data = data,
-                onRestaurantSelected = {},
+                onRestaurantSelected = { restaurant -> navController.navigate("details/${restaurant.id}") },
                 listState = listState,
                 viewModel = viewModel,
                 showDistance = showDistance

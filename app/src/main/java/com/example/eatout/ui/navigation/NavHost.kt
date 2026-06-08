@@ -8,8 +8,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.example.eatout.ui.screens.DetailsScreen
 import com.example.eatout.ui.screens.DishesScreen
 import com.example.eatout.ui.screens.HomeScreen
 import com.example.eatout.ui.screens.LocationSettingsScreen
@@ -87,6 +90,15 @@ fun AppNavHost(
                         navController = navController,
                         listType = "TO_VISIT"
                     )
+                }
+
+                composable(
+                    route = "details/{restaurantId}",
+                    arguments = listOf(navArgument("restaurantId") { type = NavType.IntType })
+                ) { backStackEntry ->
+                    val restaurantId = backStackEntry.arguments?.getInt("restaurantId") ?: -1
+
+                    DetailsScreen(restaurantId = restaurantId)
                 }
 
                 composable(route = "dishes")

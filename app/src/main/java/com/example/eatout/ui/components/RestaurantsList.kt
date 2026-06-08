@@ -4,8 +4,11 @@ import android.R.attr.data
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -139,32 +142,62 @@ fun RestaurantCard(
 
             Column(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(2f)
                     .padding(horizontal = 12.dp)
             ) {
-                Text(text = restaurant.name, style = MaterialTheme.typography.titleMedium)
-                Text(text = restaurant.location, style = MaterialTheme.typography.bodySmall)
-                Text(text = restaurant.cuisineType, style = MaterialTheme.typography.labelSmall)
+                Text(text = restaurant.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onBackground)
+                Text(text = restaurant.location,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground)
+                Text(text = restaurant.cuisineType,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onBackground)
+                Spacer(modifier = Modifier.height(10.dp))
+
+                @OptIn(ExperimentalLayoutApi::class)
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    restaurant.tags.forEach { tag ->
+                        TagLabel(text = tag, isCompact = true)
+                    }
+                }
             }
-            if (distance != null) Text("DIST") // TODO ADD REAL DISTANCE
-            IconButton(onClick = onAddClick) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Ulubione",
-                    modifier = Modifier.size(24.dp),
-                    tint = if (!restaurant.isToVisit) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+
+            ) {
+                if (distance != null) Text("DIST")
+                // TODO ADD REAL DISTANCE
+                Row(horizontalArrangement = Arrangement.End) {
+                    IconButton(onClick = onAddClick) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Ulubione",
+                            modifier = Modifier.size(24.dp),
+                            tint = if (!restaurant.isToVisit) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        )
+                    }
+
+                    IconButton(onClick = { viewModel.toggleFavourite(restaurant.id) }) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Ulubione",
+                            modifier = Modifier.size(24.dp),
+                            tint = if (restaurant.isFavorite) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        )
+                    }
+                }
             }
-            IconButton(onClick = { viewModel.toggleFavourite(restaurant.id) }) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "Ulubione",
-                    modifier = Modifier.size(24.dp),
-                    tint = if (restaurant.isFavorite) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
-            }
+
         }
     }
 }
