@@ -125,7 +125,8 @@ fun DishesPhoneLayout(
             DishesList(
                 data = data,
                 listState = listState,
-                viewModel = viewModel
+                viewModel = viewModel,
+                modifier = Modifier.fillMaxWidth()
             )
             SimpleVerticalScrollbar(
                 modifier = Modifier

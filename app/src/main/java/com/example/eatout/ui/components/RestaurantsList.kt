@@ -65,14 +65,12 @@ fun RestaurantsList(
     var showAlreadyAddedDialog by remember { mutableStateOf(false) }
 
     if (showAlreadyAddedDialog) {
-        AlertDialog(
+        CustomAlertDialog(
             onDismissRequest = { showAlreadyAddedDialog = false },
-            title = { Text("Restaurant Added") },
-            text = { Text("This restaurant is already on your To Visit List") },
-            confirmButton = {
-                TextButton(onClick = { showAlreadyAddedDialog = false }) { Text("OK") }
-            }
+            title = "Restaurant Added",
+            message = "This restaurant is already on your To Visit List"
         )
+
     }
 
     LazyColumn(

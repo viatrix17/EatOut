@@ -45,26 +45,23 @@ import com.example.eatout.viewmodel.DishViewModel
 fun DishesList(
     data: List<Dish>,
     listState: LazyListState = rememberLazyListState(),
-    viewModel: DishViewModel
-){
-
+    viewModel: DishViewModel,
+    modifier: Modifier = Modifier
+) {
 
     var showAlreadyAddedDialog by remember { mutableStateOf(false) }
 
     if (showAlreadyAddedDialog) {
-        AlertDialog(
+        CustomAlertDialog(
             onDismissRequest = { showAlreadyAddedDialog = false },
-            title = { Text("Dish Added") },
-            text = { Text("This dish is already on your To Try List") },
-            confirmButton = {
-                TextButton(onClick = { showAlreadyAddedDialog = false }) { Text("OK") }
-            }
+            title = "Dish Added",
+            message = "This dish is already on your To Try List"
         )
     }
 
     LazyColumn(
         state = listState,
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(16.dp)
     ) {
@@ -77,7 +74,7 @@ fun DishesList(
                     if (dish.isToTry) {
                         showAlreadyAddedDialog = true
                     } else {
-                        viewModel.toggleToVisit(dish.id)
+                        viewModel.toggleToTry(dish.id)
                     }
                 },
             )
