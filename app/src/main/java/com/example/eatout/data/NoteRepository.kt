@@ -16,14 +16,20 @@ class NoteRepository {
     // Odwołanie do kolekcji "notes" w bazie Firestore
     // Funkcja dodająca nową notatkę do bazy; suspend oznacza, że funkcja działa asynchronicznie w korutynie
     suspend fun addNote(note: Note, collection : String) {
+        var notatki = getNotes(collection)
+
 // Utworzenie nowego dokumentu z automatycznie generowanym ID
         val docRef = db.collection(collection).document()
 // Skopiowanie obiektu note i przypisanie mu wygenerowanego ID dokumentu
         val noteWithId = note.copy(restauracja = note.restauracja)
         nextId+=1
-
+        if(note in notatki){
+            return
+        }else{
+            docRef.set(noteWithId).await()
+        }
 // Zapisanie notatki do Firestore; await() wstrzymuje wykonanie korutyny do momentu zakończenia operacji
-        docRef.set(noteWithId).await()
+
     }
     // Funkcja pobierająca wszystkie notatki z kolekcji "notes"
     suspend fun getNotes(collection : String): List<Note> {

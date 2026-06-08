@@ -44,14 +44,14 @@ fun addToFavourite(rest : Restaurant, noteViewModel: NoteViewModel){
         addNote(note, "favourites")
     }
 }
-fun addToVisit(nazwa : String, lokalizacja : String, Tagi : List<String>, lan : Double, lon : Double, noteViewModel : NoteViewModel){
+fun addToVisit(rest : Restaurant, noteViewModel: NoteViewModel){
     var note : Note = Note()
-    note.restauracja = nazwa;
-    note.lokalizacja = lokalizacja
-    note.tagi = Tagi
-    note.lon=lon
-    note.lan=lan
-
+    note.restauracja = rest.name;
+    note.lokalizacja = rest.location
+    note.tagi = Post.returnTag(rest.name)
+    note.lon=rest.lon
+    note.lan=rest.lon
+    Log.d("TAG", "added to visit")
     noteViewModel.run {
         addNote(note, "rest_to_visit")
     }
