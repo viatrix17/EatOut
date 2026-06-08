@@ -1,7 +1,11 @@
 package com.example.eatout.data
+
+import org.intellij.lang.annotations.Language
+
 data class Note(
     var restauracja : String = "error",
-    var distance : Double = 0.0,
-    var favourite : Boolean = false,
-    var toVisit : Boolean = false
+    var lokalizacja : String = "adres",
+    var tagi : Array<String> = arrayOf(),
+    var lan : Double= 0.0,
+    var lon : Double=0.0
 )

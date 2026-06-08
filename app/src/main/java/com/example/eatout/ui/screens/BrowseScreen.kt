@@ -1,7 +1,5 @@
 package com.example.eatout.ui.screens
 
-import android.graphics.Color
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,16 +11,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.eatout.GlobalData
 import com.example.eatout.data.Note
+import com.example.eatout.model.Post
 import com.example.eatout.ui.NoteViewModel
+import com.example.eatout.viewmodel.RestaurantViewModel
 
 @Composable
 fun BrowseScreen(
@@ -33,12 +30,28 @@ fun BrowseScreen(
     BrowsePhoneLayout(noteViewModel)
 }
 
-fun addToFavourite(string : String, noteViewModel : NoteViewModel){
+fun addToFavourite(nazwa: String, lokalizacja: String, Tagi: List<String>, lan: Double, lon: Double, noteViewModel: NoteViewModel){
     var note : Note = Note()
-    note.restauracja = string;
+    note.restauracja = nazwa;
+    note.lokalizacja = lokalizacja
+    note.tagi = Tagi.toTypedArray()
+    note.lon=lon
+    note.lan=lan
 
     noteViewModel.run {
         addNote(note, "favourites")
+    }
+}
+fun addToVisit(nazwa : String, lokalizacja : String, Tagi : Array<String>, lan : Double, lon : Double, noteViewModel : NoteViewModel){
+    var note : Note = Note()
+    note.restauracja = nazwa;
+    note.lokalizacja = lokalizacja
+    note.tagi = Tagi.copyOf()
+    note.lon=lon
+    note.lan=lan
+
+    noteViewModel.run {
+        addNote(note, "rest_to_visit")
     }
 }
 
@@ -51,14 +64,14 @@ fun BrowsePhoneLayout(noteViewModel : NoteViewModel)
 
 
     LazyColumn(modifier = Modifier.fillMaxHeight()) {
-        items(items = GlobalData.ListOfRestaurants, itemContent = { item ->
+        items(items = RestaurantViewModel.allRestaurants, itemContent = { item ->
             Box(modifier = Modifier
                 .fillMaxWidth()
-                .clickable{addToFavourite(item,noteViewModel)},
+                .clickable{addToFavourite(item.name,item.location,Post.returnTag(item.name),item.lan,item.lon,noteViewModel)},
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = item,
+                    text = item.name,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center

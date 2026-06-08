@@ -3,6 +3,8 @@ package com.example.eatout.model
 import android.R
 import android.util.Log
 import com.example.eatout.GlobalData
+import com.example.eatout.viewmodel.Restaurant
+import com.example.eatout.viewmodel.RestaurantViewModel
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -41,10 +43,10 @@ class Post {
         }
         fun FindLantiudes(string: String) {
             var add = false
-            var result = ArrayList<String>()
+            var result = ArrayList<Double>()
             var indexes = string.indexesOf("\"lat\"", false)
             for (i in indexes) {
-                var r = ""
+                var r = 0.0
                 var j = i + 1
                 //while(string[j] != '"'){
                 //    r += string[j]
@@ -53,7 +55,7 @@ class Post {
                     .first()
                 println(a)
                 if (a > 0 && a + i + 6 < string.length) {
-                    r = string.substring(i + 7, i + 6 + a)
+                    r = string.substring(i + 7, i + 6 + a).toDouble()
                     println(r)
                     if(add==true){
                         result.add(r)
@@ -68,10 +70,10 @@ class Post {
         }
         fun FindLontitudes(string: String) {
             var add = false
-            var result = ArrayList<String>()
+            var result = ArrayList<Double>()
             var indexes = string.indexesOf("\"lon\"", false)
             for (i in indexes) {
-                var r = ""
+                var r: Double = 0.0
                 var j = i + 1
                 //while(string[j] != '"'){
                 //    r += string[j]
@@ -80,8 +82,8 @@ class Post {
                     .first()
                 println(a)
                 if (a > 0 && a + i + 6 < string.length) {
-                    r = string.substring(i + 7, i + 6 + a)
-                    Log.d("TAG", r)
+                    r = string.substring(i + 7, i + 6 + a).toDouble()
+                    Log.d("TAG", r.toString())
                     if(add==true){
                         result.add(r)
                     }else{
@@ -104,15 +106,24 @@ class Post {
                 Log.d("TAG", tmp.toString())
             }
 
+            ConvertToViewModel()
+        }
+        fun ConvertToViewModel(){
+            var i : Int = 0
+            while(i<GlobalData.Companion.RestaurantsLontitudes.size){
+                var restauracja : Restaurant = Restaurant(i,GlobalData.Companion.ListOfRestaurants[i],"adres",0.0,"",returnTag(GlobalData.Companion.ListOfRestaurants[i]),false,false,GlobalData.Companion.RestaurantsLantitudes[i],GlobalData.Companion.RestaurantsLontitudes[i])
+                RestaurantViewModel.allRestaurants.add(restauracja)
+                i+=1
+            }
             GlobalData.Flag = true
         }
-        fun returnTag(RestaurantName : String): Array<String> {
-            var TAGS = arrayOf("fast", "expensive", "vegan")
+        fun returnTag(RestaurantName : String): List<String> {
+            var TAGS = listOf("fast", "expensive", "vegan")
             var sum : Int = 0
             for(i in RestaurantName){
                 sum += i.code
             }
-            return arrayOf(TAGS[sum % 3], TAGS[((sum % 3) + (sum % 2 + 1)) % 3])
+            return listOf(TAGS[sum % 3], TAGS[((sum % 3) + (sum % 2 + 1)) % 3])
         }
     }
 }
