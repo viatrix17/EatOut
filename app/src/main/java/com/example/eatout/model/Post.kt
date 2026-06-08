@@ -100,12 +100,19 @@ class Post {
             while(i<GlobalData.Companion.RestaurantsLontitudes.size){
                 var tmp : Double  =sqrt((GlobalData.Companion.longitude - GlobalData.Companion.RestaurantsLontitudes[i].toDouble()).pow(2) + sqrt((GlobalData.Companion.latitude - GlobalData.Companion.RestaurantsLantitudes[i].toDouble()).pow(2)));
                 GlobalData.Companion.Distances.add(tmp);
-                GlobalData.Companion.ListOfRestaurants[i] += tmp.toString();
                 i+=1
                 Log.d("TAG", tmp.toString())
             }
 
             GlobalData.Flag = true
+        }
+        fun returnTag(RestaurantName : String): Array<String> {
+            var TAGS = arrayOf("fast", "expensive", "vegan")
+            var sum : Int = 0
+            for(i in RestaurantName){
+                sum += i.code
+            }
+            return arrayOf(TAGS[sum % 3], TAGS[((sum % 3) + (sum % 2 + 1)) % 3])
         }
     }
 }
