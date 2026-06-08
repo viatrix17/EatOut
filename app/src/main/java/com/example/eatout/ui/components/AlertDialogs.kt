@@ -12,7 +12,9 @@ fun CustomAlertDialog(
     title: String,
     message: String,
     confirmButtonText: String = "OK",
-    onConfirm: () -> Unit = onDismissRequest
+    onConfirm: () -> Unit = onDismissRequest,
+    showDismissButton: Boolean = false,
+    dismissButtonText: String = "Cancel"
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -22,6 +24,13 @@ fun CustomAlertDialog(
             TextButton(onClick = onConfirm) {
                 Text(confirmButtonText)
             }
-        }
+        },
+        dismissButton = if (showDismissButton) {
+            {
+                TextButton(onClick = onDismissRequest) {
+                    Text(dismissButtonText)
+                }
+            }
+        } else null
     )
 }

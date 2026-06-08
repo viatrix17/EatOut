@@ -29,7 +29,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun AppLeftDrawer(
@@ -114,7 +121,8 @@ data class Notification(
     val id: Int,
     val title: String,
     val message: String,
-    val time: String
+    val time: String,
+    val isRead: Boolean = false
 )
 
 @Composable
@@ -125,26 +133,40 @@ fun AppRightDrawer(
 ) {
     // MOCK DATA
 
-    val notifications = listOf(
-        Notification(
-            id = 1,
-            title = "Potwierdzenie Twojej rezerwacji w lokalu 'Poznańska Pyra'",
-            message = "Twoja rezerwacja na dzisiaj, 2 czerwca 2026 roku, na godzinę 19:30 dla 4 osób została pomyślnie potwierdzona przez restaurację. Prosimy o punktualne przybycie, a w razie jakichkolwiek zmian, prosimy o kontakt bezpośrednio z lokalem.",
-            time = "10:30"
-        ),
-        Notification(
-            id = 2,
-            title = "Specjalna oferta weekendowa tylko dla Ciebie!",
-            message = "Z okazji nadchodzącego weekendu przygotowaliśmy dla Ciebie wyjątkowy rabat w wysokości 20% na cały asortyment w naszych partnerskich restauracjach w centrum Poznania. Wystarczy, że przy płatności pokażesz kod QR wygenerowany w aplikacji.",
-            time = "12:00"
-        ),
-        Notification(
-            id = 3,
-            title = "Ankieta satysfakcji klienta",
-            message = "Bardzo cenimy Twoją opinię! Po ostatniej wizycie w 'Restauracji Ratuszowa' chcielibyśmy zapytać, jak oceniasz jakość obsługi oraz smak serwowanych dań. Wypełnienie krótkiej ankiety zajmie Ci zaledwie dwie minuty.",
-            time = "14:15"
+    // Wewnątrz AppRightDrawer:
+    val notifications = remember {
+        mutableStateListOf(
+            Notification(
+                id = 1,
+                title = "Potwierdzenie Twojej rezerwacji w lokalu 'Poznańska Pyra'",
+                message = "Twoja rezerwacja na dzisiaj, 2 czerwca 2026 roku, na godzinę 19:30 dla 4 osób została pomyślnie potwierdzona przez restaurację.",
+                time = "10:30"
+            ),
+            Notification(
+                id = 2,
+                title = "Specjalna oferta weekendowa tylko dla Ciebie!",
+                message = "Z okazji nadchodzącego weekendu przygotowaliśmy dla Ciebie wyjątkowy rabat w wysokości 20%.",
+                time = "12:00"
+            ),
+            Notification(
+                id = 3,
+                title = "Ankieta satysfakcji klienta",
+                message = "Bardzo cenimy Twoją opinię! Po ostatniej wizycie w 'Restauracji Ratuszowa' chcielibyśmy zapytać, jak oceniasz obsługę.",
+                time = "14:15"
+            )
         )
-    )
+    }
+
+    var selectedNotification by remember { mutableStateOf<Notification?>(null) }
+
+    selectedNotification?.let { notif ->
+        CustomAlertDialog(
+            onDismissRequest = { selectedNotification = null },
+            title = notif.title,
+            message = notif.message
+        )
+    }
+
     ModalDrawerSheet(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -162,26 +184,42 @@ fun AppRightDrawer(
         )
         LazyColumn(modifier = Modifier.padding(16.dp)) {
             items(notifications) { notif ->
-                Column(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    horizontalAlignment = Alignment.Start) {
-                    Text(
-                        text = notif.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = notif.message,
-                        style = MaterialTheme.typography.bodySmall,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = notif.time,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                Surface(
+                    onClick = {
+                        val index = notifications.indexOf(notif)
+                        if (index != -1) {
+                            notifications.set(index, notif.copy(isRead = true))
+                        }
+                        selectedNotification = notif
+                    },
+                    color = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = notif.title,
+                            fontWeight = if (notif.isRead) FontWeight.Normal else FontWeight.Bold,
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = notif.message,
+                            fontWeight = if (notif.isRead) FontWeight.Normal else FontWeight.Bold,
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = notif.time,
+                            fontWeight = if (notif.isRead) FontWeight.Normal else FontWeight.Bold,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
                 HorizontalDivider(
                     thickness = 0.5.dp,
