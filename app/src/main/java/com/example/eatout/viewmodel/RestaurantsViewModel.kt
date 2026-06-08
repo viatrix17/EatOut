@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 data class Restaurant( // mock class and data
     val id: Int,
@@ -20,6 +23,10 @@ data class Restaurant( // mock class and data
 )
 
 enum class ListType { ALL, TO_VISIT, FAVORITES }
+
+enum class SortOption { NAME }
+
+enum class SortOrder { ASC, DESC }
 
 class RestaurantViewModel : ViewModel() {
     private val allRestaurants = listOf(
@@ -49,24 +56,84 @@ class RestaurantViewModel : ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
-    val filteredRestaurants = combine(_listType, _searchQuery) { type, query ->
-        val baseList = when (type) {
+    fun setListType(type: ListType) {
+        _listType.value = type
+    }
+
+    private val _selectedTags = MutableStateFlow<List<String>>(emptyList())
+    val selectedTags = _selectedTags.asStateFlow()
+
+    fun toggleTag(tag: String) {
+        _selectedTags.update { current ->
+            if (current.contains(tag)) current - tag else current + tag
+        }
+    }
+
+    private val _currentSort = MutableStateFlow(SortOption.NAME)
+    val currentSort = _currentSort.asStateFlow()
+
+    private val _sortOrder = MutableStateFlow(SortOrder.ASC)
+    val sortOrder = _sortOrder.asStateFlow()
+
+    fun toggleSortOrder() {
+        _sortOrder.update { if (it == SortOrder.ASC) SortOrder.DESC else SortOrder.ASC }
+    }
+
+    val filteredRestaurants = combine(
+        _listType,
+        _searchQuery,
+        _selectedTags,
+        _currentSort,
+        _sortOrder
+    ) { type, query, tags, sort, order ->
+
+        // 1. Podstawowe filtrowanie (ListType)
+        var list = when (type) {
             ListType.ALL -> allRestaurants
             ListType.TO_VISIT -> allRestaurants.filter { it.isToVisit }
             ListType.FAVORITES -> allRestaurants.filter { it.isFavorite }
         }
-        if (query.isBlank()) baseList
-        else baseList.filter { it.name.contains(query, ignoreCase = true) }
+
+        // 2. Filtrowanie tekstowe
+        if (query.isNotBlank()) {
+            list = list.filter { it.name.contains(query, ignoreCase = true) }
+        }
+
+        // 3. Filtrowanie po tagach
+        if (tags.isNotEmpty()) {
+            list = list.filter { restaurant ->
+                restaurant.tags.any { it in tags }
+            }
+        }
+
+        // 4. Sortowanie
+        // Obecnie mamy tylko SortOption.NAME, więc używamy tylko tego
+        val sortedList = if (order == SortOrder.ASC) {
+            list.sortedBy { it.name.lowercase() }
+        } else {
+            list.sortedByDescending { it.name.lowercase() }
+        }
+
+        sortedList
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         initialValue = allRestaurants
     )
 
-    fun setListType(type: ListType) {
-        _listType.value = type
-    }
 
+    val allLabels: StateFlow<List<String>> = filteredRestaurants
+        .map { restaurants ->
+            restaurants
+                .flatMap { it.tags }
+                .distinct()
+                .sorted()
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
     fun onSearchQueryChange(newQuery: String) {
         _searchQuery.value = newQuery
     }

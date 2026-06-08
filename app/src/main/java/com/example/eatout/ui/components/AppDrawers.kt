@@ -1,6 +1,8 @@
 package com.example.eatout.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,7 +31,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +42,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.eatout.viewmodel.RestaurantViewModel
+import com.example.eatout.viewmodel.SortOption
+import com.example.eatout.viewmodel.SortOrder
+import kotlinx.coroutines.flow.forEach
 
 @Composable
 fun AppLeftDrawer(
@@ -133,7 +143,6 @@ fun AppRightDrawer(
 ) {
     // MOCK DATA
 
-    // Wewnątrz AppRightDrawer:
     val notifications = remember {
         mutableStateListOf(
             Notification(
@@ -235,13 +244,56 @@ fun AppRightDrawer(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterBottomSheet(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    viewModel: RestaurantViewModel = viewModel()
 ) {
+
+    val labels by viewModel.allLabels.collectAsState()
+    val selectedTags by viewModel.selectedTags.collectAsState()
+    val currentSort by viewModel.currentSort.collectAsState()
+    val sortOrder by viewModel.sortOrder.collectAsState()
+
     ModalBottomSheet(
         onDismissRequest = { onDismiss() }
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Opcje filtrowania")
+        Column(
+            modifier = Modifier.padding(16.dp).fillMaxWidth()
+        ) {
+            Text("Filter options",
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Row {
+                Column(modifier = Modifier.weight(2f)) {
+                    FilterDropdown(
+                        label = "Category",
+                        options = labels,
+                        selectedOptions = selectedTags,
+                        onOptionToggled = { tag -> viewModel.toggleTag(tag) }
+                    )
+
+                }
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Sort")
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.toggleSortOrder() }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if (sortOrder == SortOrder.ASC) "From A to Z" else "From Z to A",
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Icon(
+                            imageVector = if (sortOrder == SortOrder.ASC) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
+                            contentDescription = "Change sort order"
+                        )
+                    }
+                }
+            }
         }
     }
 }
