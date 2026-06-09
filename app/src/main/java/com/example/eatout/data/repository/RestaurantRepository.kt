@@ -20,11 +20,11 @@ class RestaurantRepository(private val apiService: OverpassApiService) {
                 val response = apiService.getRestaurants(getPoznanQuery())
                 Log.d("DEBUG_REPO", "Otrzymano odpowiedź z Overpass: $response")
                 if (response == null) {
-                    Log.e("DEBUG_REPO", "Odpowiedź jest NULL!")
+//                    Log.e("DEBUG_REPO", "Odpowiedź jest NULL!")
                     return@withContext emptyList()
                 }
                 response?.elements?.forEachIndexed { index, dto ->
-                    Log.d("DEBUG_TAGS", "Element $index: tags is null? ${dto.apiTags == null}")
+//                    Log.d("DEBUG_TAGS", "Element $index: tags is null? ${dto.apiTags == null}")
                 }
                 val result = response?.elements?.map { dto ->
                     Restaurant(

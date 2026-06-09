@@ -43,12 +43,15 @@ import com.example.eatout.ui.components.DishesList
 import com.example.eatout.ui.components.TagLabel
 import com.example.eatout.domain.model.Dish
 import androidx.compose.foundation.lazy.items
+import com.example.eatout.data.repository.RestaurantRepository
+import com.example.eatout.util.LocalRepository
+import com.example.eatout.util.RestaurantViewModelFactory
 
 @Composable
 fun DetailsScreen(
     restaurantId: Long,
-    restaurantViewModel: RestaurantViewModel = viewModel(),
-    dishViewModel: DishViewModel = viewModel()
+    restaurantViewModel: RestaurantViewModel,
+    dishViewModel: DishViewModel
 ){
     var showAlreadyAddedRestaurantDialog by remember { mutableStateOf(false) }
 
@@ -166,7 +169,7 @@ fun DetailsPhoneLayout(
                 ) {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .weight(1f)
                     ) {
                         Text(
                             "${restaurant.address}",
