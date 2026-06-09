@@ -23,7 +23,10 @@ import com.example.eatout.ui.screens.ModeSettingsScreen
 import com.example.eatout.ui.screens.RecommendationScreen
 import com.example.eatout.ui.screens.RestaurantListScreen
 import com.example.eatout.util.LocalRepository
+import com.example.eatout.util.RestaurantViewModelFactory
+import com.example.eatout.viewmodel.DishViewModel
 import com.example.eatout.viewmodel.MainViewModel
+import com.example.eatout.viewmodel.RestaurantViewModel
 
 @Composable
 fun AppNavHost(
@@ -35,6 +38,12 @@ fun AppNavHost(
 ) {
     val viewModel: MainViewModel = viewModel()
     val noteViewModel: NoteViewModel = viewModel()
+
+    val factory = RestaurantViewModelFactory(repository)
+    val restaurantViewModel: RestaurantViewModel = viewModel(factory = factory)
+
+    val dishViewModel: DishViewModel = viewModel()
+
     Box(modifier = Modifier) {
         CompositionLocalProvider(LocalRepository provides repository) {
             NavHost(
@@ -63,7 +72,11 @@ fun AppNavHost(
                     RestaurantListScreen(
                         isTablet = isTablet,
                         navController = navController,
+<<<<<<< HEAD
                         noteViewModel = noteViewModel
+=======
+                        viewModel = restaurantViewModel
+>>>>>>> d6bd15e9e91f63bb70752626240f6b3d6ed1a129
                     )
                 }
                 composable(route = "closest") {
@@ -71,7 +84,11 @@ fun AppNavHost(
                         isTablet = isTablet,
                         navController = navController,
                         showDistance = true,
+<<<<<<< HEAD
                         noteViewModel = noteViewModel
+=======
+                        viewModel = restaurantViewModel
+>>>>>>> d6bd15e9e91f63bb70752626240f6b3d6ed1a129
                     )
                 }
                 composable(route = "recommendation")
@@ -88,7 +105,11 @@ fun AppNavHost(
                         isTablet = isTablet,
                         navController = navController,
                         listType = "FAVORITES",
+<<<<<<< HEAD
                         noteViewModel = noteViewModel
+=======
+                        viewModel = restaurantViewModel
+>>>>>>> d6bd15e9e91f63bb70752626240f6b3d6ed1a129
                     )
                 }
 
@@ -98,17 +119,29 @@ fun AppNavHost(
                         isTablet = isTablet,
                         navController = navController,
                         listType = "TO_VISIT",
+<<<<<<< HEAD
                         noteViewModel = noteViewModel
+=======
+                        viewModel = restaurantViewModel
+>>>>>>> d6bd15e9e91f63bb70752626240f6b3d6ed1a129
                     )
                 }
 
                 composable(
                     route = "details/{restaurantId}",
-                    arguments = listOf(navArgument("restaurantId") { type = NavType.IntType })
+                    arguments = listOf(navArgument("restaurantId") { type = NavType.LongType })
                 ) { backStackEntry ->
                     val restaurantId = backStackEntry.arguments?.getLong("restaurantId") ?: -1
 
+<<<<<<< HEAD
                     DetailsScreen(restaurantId = restaurantId, noteViewModel = noteViewModel)
+=======
+                    DetailsScreen(
+                        restaurantId = restaurantId,
+                        restaurantViewModel = restaurantViewModel,
+                        dishViewModel = dishViewModel
+                    )
+>>>>>>> d6bd15e9e91f63bb70752626240f6b3d6ed1a129
                 }
 
                 composable(route = "dishes")

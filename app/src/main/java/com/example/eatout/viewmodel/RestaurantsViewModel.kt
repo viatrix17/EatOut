@@ -2,6 +2,7 @@ package com.example.eatout.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.eatout.data.Note
 import com.example.eatout.data.repository.RestaurantRepository
@@ -49,6 +50,16 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
         Restaurant(14, "VietStreet", "Poznań, Głogowska",  "Wietnamska", listOf("azjatyckie", "street-food"), false, true),
         Restaurant(15, "Steakhouse Prime", "Poznań, Centrum",  "Amerykańska", listOf("steakhouse", "klasyczne"), true, false)
     )
+
+    companion object {
+        fun provideFactory(repository: RestaurantRepository): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return RestaurantViewModel(repository) as T
+                }
+            }
+    }
 
     val allRestaurants = repository.restaurantsFlow
         .stateIn(
