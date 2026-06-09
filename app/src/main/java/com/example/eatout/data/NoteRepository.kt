@@ -2,6 +2,7 @@ package com.example.eatout.data
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.room.util.copy
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.tasks.await
@@ -30,6 +31,16 @@ class NoteRepository {
         }
 // Zapisanie notatki do Firestore; await() wstrzymuje wykonanie korutyny do momentu zakończenia operacji
 
+    }
+    suspend fun removeNote(note : Note, collection : String){
+        val docRef = db.collection(collection).document()
+        var notes = getNotes(collection).toList()
+        clearNotes(collection)
+        for(i in notes){
+            if(i != note){
+                addNote(i, collection)
+            }
+        }
     }
     // Funkcja pobierająca wszystkie notatki z kolekcji "notes"
     suspend fun getNotes(collection : String): List<Note> {

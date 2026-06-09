@@ -62,14 +62,16 @@ fun AppNavHost(
                 composable(route = "browse") {
                     RestaurantListScreen(
                         isTablet = isTablet,
-                        navController = navController
+                        navController = navController,
+                        noteViewModel = noteViewModel
                     )
                 }
                 composable(route = "closest") {
                     RestaurantListScreen(
                         isTablet = isTablet,
                         navController = navController,
-                        showDistance = true
+                        showDistance = true,
+                        noteViewModel = noteViewModel
                     )
                 }
                 composable(route = "recommendation")
@@ -86,6 +88,7 @@ fun AppNavHost(
                         isTablet = isTablet,
                         navController = navController,
                         listType = "FAVORITES",
+                        noteViewModel = noteViewModel
                     )
                 }
 
@@ -94,7 +97,8 @@ fun AppNavHost(
                     RestaurantListScreen(
                         isTablet = isTablet,
                         navController = navController,
-                        listType = "TO_VISIT"
+                        listType = "TO_VISIT",
+                        noteViewModel = noteViewModel
                     )
                 }
 
@@ -104,7 +108,7 @@ fun AppNavHost(
                 ) { backStackEntry ->
                     val restaurantId = backStackEntry.arguments?.getLong("restaurantId") ?: -1
 
-                    DetailsScreen(restaurantId = restaurantId)
+                    DetailsScreen(restaurantId = restaurantId, noteViewModel = noteViewModel)
                 }
 
                 composable(route = "dishes")

@@ -156,11 +156,25 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
     }
 
 
-    fun toggleFavourite(id: Long){
+    fun toggleFavourite(rest : Restaurant, noteViewModel: NoteViewModel){
+        if(getRestaurantById(rest.id) == null){
+            addToFavourite(rest, noteViewModel)
+        }else{
+            var note : Note = Note()
+            note.restauracja=rest.name
+            note.lon=rest.lon
+            note.lan=rest.lan
+            note.lokalizacja=rest.address
+            noteViewModel.run {
+                removeNote(note, "favourites")
+            }
+
+        }
         // TO DO DODAĆ ŻEBY ZMIENIAŁO FAVOURITE - wywoływanie funkcji z modelu (klasy)
     }
 
     fun toggleToVisit(id: Long){
+
         // TO DO DODAĆ ŻEBY ZMIENIAŁO FAVOURITE - wywoływanie funkcji z modelu (klasy)
     }
 

@@ -53,6 +53,7 @@ import com.example.eatout.R
 import com.example.eatout.viewmodel.RestaurantViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.eatout.viewmodel.NoteViewModel
 
 @Composable
 fun RestaurantsList(
@@ -60,7 +61,8 @@ fun RestaurantsList(
     onRestaurantSelected: (Restaurant) -> Unit,
     listState: LazyListState = rememberLazyListState(),
     viewModel: RestaurantViewModel,
-    showDistance: Boolean = false
+    showDistance: Boolean = false,
+    noteViewModel: NoteViewModel
 ){
     var showAlreadyAddedDialog by remember { mutableStateOf(false) }
 
@@ -91,7 +93,8 @@ fun RestaurantsList(
                         viewModel.toggleToVisit(restaurant.id)
                     }
                 },
-                showDistance = showDistance
+                showDistance = showDistance,
+                noteViewModel = noteViewModel
             )
         }
     }
@@ -103,7 +106,8 @@ fun RestaurantCard(
     onClick: () -> Unit,
     viewModel: RestaurantViewModel,
     onAddClick: () -> Unit,
-    showDistance: Boolean
+    showDistance: Boolean,
+    noteViewModel: NoteViewModel
 ) {
     val distance = if (showDistance){
         100 // MOCK DATA
@@ -184,7 +188,7 @@ fun RestaurantCard(
                         )
                     }
 
-                    IconButton(onClick = { viewModel.toggleFavourite(restaurant.id) }) {
+                    IconButton(onClick = { viewModel.toggleFavourite(restaurant, noteViewModel) }) {
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = "Ulubione",

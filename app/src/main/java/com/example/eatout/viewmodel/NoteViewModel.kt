@@ -35,6 +35,11 @@ class NoteViewModel : ViewModel() {
             Log.d("TAG",notes.value.last().toString())
         }
     } // Funkcja dodająca nową notatkę do bazy – nic się tu nie zmienia
+    fun removeNote(note : Note, collection : String){
+        viewModelScope.launch {
+            repository.removeNote(note, collection)
+        }
+    }
     fun clearNotes(collection: String){
         viewModelScope.launch {
             repository.clearNotes(collection)
