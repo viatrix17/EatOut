@@ -46,8 +46,7 @@ import com.example.eatout.viewmodel.NoteViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RestaurantListScreen(
-    repository: RestaurantRepository = LocalRepository.current,
-    viewModel: RestaurantViewModel = viewModel(factory = RestaurantViewModelFactory(repository)),
+    viewModel: RestaurantViewModel,
     isTablet: Boolean,
     navController: NavHostController,
     listType: String = "ALL",
