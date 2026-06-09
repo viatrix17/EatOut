@@ -1,11 +1,14 @@
 package com.example.eatout.ui.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -64,11 +67,7 @@ fun FilterDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-    ) {
+    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
         val displayText = if (selectedOptions.isEmpty()) "Wybierz $label" else "${selectedOptions.size} zaznaczonych"
 
         SettingsButton(
@@ -77,21 +76,36 @@ fun FilterDropdown(
             onClick = { expanded = !expanded }
         )
 
-        ExposedDropdownMenu(
+        DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth(0.9f)
         ) {
-            options.forEach { option ->
+            if (options.isEmpty()) {
                 DropdownMenuItem(
-                    text = { Text(option) },
-                    leadingIcon = {
-                        Checkbox(
-                            checked = selectedOptions.contains(option),
-                            onCheckedChange = null
+                    text = {
+                        Text(
+                            text = "No tags assigned",
+                            color = MaterialTheme.colorScheme.outline
                         )
                     },
-                    onClick = { onOptionToggled(option) }
+                    onClick = {  },
+                    enabled = false
                 )
+            } else {
+                // Wyświetlamy listę tagów
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option) },
+                        leadingIcon = {
+                            Checkbox(
+                                checked = selectedOptions.contains(option),
+                                onCheckedChange = null
+                            )
+                        },
+                        onClick = { onOptionToggled(option) }
+                    )
+                }
             }
         }
     }

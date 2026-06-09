@@ -128,7 +128,8 @@ fun AppNavHost(
                 {
                     DishesScreen(
                         isTablet = isTablet,
-                        navController = navController
+                        navController = navController,
+                        viewModel = dishViewModel
                     )
                 }
                 composable(route = "location-settings")

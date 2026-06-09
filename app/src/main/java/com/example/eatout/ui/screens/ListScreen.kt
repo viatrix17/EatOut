@@ -52,6 +52,8 @@ import com.example.eatout.util.LocalRepository
 import com.example.eatout.util.RestaurantViewModelFactory
 import com.example.eatout.viewmodel.ListType
 import com.example.eatout.viewmodel.MainViewModel
+import com.example.eatout.viewmodel.SortOption
+import com.example.eatout.viewmodel.SortOrder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,6 +86,11 @@ fun RestaurantListScreen(
 
     var showBottomSheet by remember { mutableStateOf(false) }
 
+    val labels by viewModel.allLabels.collectAsState()
+    val selectedTags by viewModel.selectedTags.collectAsState()
+    val currentSort by viewModel.currentSort.collectAsState()
+    val sortOrder by viewModel.sortOrder.collectAsState()
+
     RestaurantListScreenPhoneLayout(
         navController = navController,
         listState = listState,
@@ -93,8 +100,14 @@ fun RestaurantListScreen(
         keyboardController = keyboardController,
         onFilterStateChange = { showBottomSheet = it },
         showBottomSheet = showBottomSheet,
-        viewModel = viewModel,
-        showDistance = showDistance
+        showDistance = showDistance,
+        labels = labels,
+        selectedOptions = selectedTags,
+        onOptionToggled = { viewModel.toggleTag(it) },
+        currentSort = currentSort,
+        sortOrder = sortOrder,
+        onSortOrderToggled = { viewModel.toggleSortOrder() },
+        viewModel = viewModel
     )
 }
 
@@ -110,7 +123,13 @@ fun RestaurantListScreenPhoneLayout(
     onFilterStateChange: (Boolean) -> Unit,
     showBottomSheet: Boolean,
     viewModel: RestaurantViewModel,
-    showDistance: Boolean
+    showDistance: Boolean,
+    labels: List<String>,
+    selectedOptions: List<String>,
+    onOptionToggled: (String) -> Unit,
+    currentSort: SortOption,
+    sortOrder: SortOrder,
+    onSortOrderToggled: () -> Unit
 ) {
     Column {
         Row(
@@ -159,7 +178,12 @@ fun RestaurantListScreenPhoneLayout(
 
         if (showBottomSheet) {
             FilterBottomSheet(
-                onDismiss = { onFilterStateChange(false) }
+                onDismiss = { onFilterStateChange(false) },
+                labels = labels,
+                selectedOptions = selectedOptions,
+                onOptionToggled = onOptionToggled,
+                currentSortOrder = sortOrder,
+                onSortToggle = onSortOrderToggled
             )
         }
     }

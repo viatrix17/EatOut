@@ -138,7 +138,7 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
     )
 
 
-    val allLabels: StateFlow<List<String>> = filteredRestaurants
+    val allLabels: StateFlow<List<String>> = allRestaurants
         .map { restaurants ->
             restaurants
                 .flatMap { it.tags }
@@ -179,7 +179,7 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
         var note : Note = Note()
         note.restauracja = rest.name;
         note.lokalizacja = rest.address
-        note.tagi = RestaurantProcessor.returnTag(rest.name)
+        note.tagi = rest.tags
         note.lon=rest.lon
         note.lan=rest.lon
         Log.d("TAG", "added something")
@@ -192,7 +192,7 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
         var note : Note = Note()
         note.restauracja = rest.name;
         note.lokalizacja = rest.address
-        note.tagi = RestaurantProcessor.returnTag(rest.name)
+        note.tagi = rest.tags
         note.lon=rest.lon
         note.lan=rest.lon
         Log.d("TAG", "added to visit")

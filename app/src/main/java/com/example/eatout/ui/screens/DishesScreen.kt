@@ -47,10 +47,12 @@ import com.example.eatout.domain.model.Dish
 import com.example.eatout.viewmodel.DishViewModel
 import com.example.eatout.viewmodel.DishesListType
 import com.example.eatout.viewmodel.NoteViewModel
+import com.example.eatout.viewmodel.SortOption
+import com.example.eatout.viewmodel.SortOrder
 
 @Composable
 fun DishesScreen(
-    viewModel: DishViewModel = viewModel(),
+    viewModel: DishViewModel,
     isTablet: Boolean,
     navController: NavHostController,
     listType: String = "ALL"
@@ -76,6 +78,10 @@ fun DishesScreen(
 
     var showBottomSheet by remember { mutableStateOf(false) }
 
+    val labels by viewModel.allLabels.collectAsState()
+    val selectedTags by viewModel.selectedTags.collectAsState()
+    val currentSort by viewModel.currentSort.collectAsState()
+    val sortOrder by viewModel.sortOrder.collectAsState()
 
     DishesPhoneLayout(
         listState = listState,
@@ -85,7 +91,14 @@ fun DishesScreen(
         keyboardController = keyboardController,
         onFilterStateChange = { showBottomSheet = it },
         showBottomSheet = showBottomSheet,
-        viewModel = viewModel
+        viewModel = viewModel,
+        labels = labels,
+        selectedOptions = selectedTags,
+        onOptionToggled = { viewModel.toggleTag(it) },
+        currentSort = currentSort,
+        sortOrder = sortOrder,
+        onSortOrderToggled = { viewModel.toggleSortOrder() },
+
     )
 }
 
@@ -99,6 +112,12 @@ fun DishesPhoneLayout(
     onFilterStateChange: (Boolean) -> Unit,
     showBottomSheet: Boolean,
     viewModel: DishViewModel,
+    labels: List<String>,
+    selectedOptions: List<String>,
+    onOptionToggled: (String) -> Unit,
+    currentSort: SortOption,
+    sortOrder: SortOrder,
+    onSortOrderToggled: () -> Unit
 ) {
     Column {
         Row(
@@ -147,7 +166,12 @@ fun DishesPhoneLayout(
 
         if (showBottomSheet) {
             FilterBottomSheet(
-                onDismiss = { onFilterStateChange(false) }
+                onDismiss = { onFilterStateChange(false) },
+                labels = labels,
+                selectedOptions = selectedOptions,
+                onOptionToggled = onOptionToggled,
+                currentSortOrder = sortOrder,
+                onSortToggle = onSortOrderToggled
             )
         }
     }

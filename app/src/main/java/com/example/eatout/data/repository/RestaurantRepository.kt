@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.eatout.data.model.OverpassResponse
 import com.example.eatout.domain.model.Restaurant
 import com.example.eatout.network.OverpassApiService
+import com.example.eatout.util.RestaurantProcessor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,13 +27,20 @@ class RestaurantRepository(private val apiService: OverpassApiService) {
                 response?.elements?.forEachIndexed { index, dto ->
 //                    Log.d("DEBUG_TAGS", "Element $index: tags is null? ${dto.apiTags == null}")
                 }
+
+
                 val result = response?.elements?.map { dto ->
+                    val name = dto.apiTags?.name ?: "Unknown restaurant"
+                    val generatedTags = RestaurantProcessor.returnTags(name)
                     Restaurant(
                         id = dto.id,
                         name = dto.apiTags?.name ?: "Unknown restaurant",
                         lan = dto.lat,
                         lon = dto.lon,
-                        address = dto.apiTags?.getFullAddress() ?: "Unknown address"
+                        address = dto.apiTags?.getFullAddress() ?: "Unknown address",
+                        tags = generatedTags,
+                        isFavorite = false,
+                        isToVisit = false
                     )
                 } ?: emptyList()
                 Log.d("DEBUG_REPO", "Przetworzono ${result.size} elementów")

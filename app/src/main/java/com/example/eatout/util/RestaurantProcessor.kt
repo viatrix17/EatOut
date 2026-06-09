@@ -4,7 +4,7 @@ import kotlin.math.*
 
 object RestaurantProcessor {
 
-    fun returnTag(restaurantName: String): List<String> {
+    fun returnTags(restaurantName: String): List<String> {
         val tags = listOf("fast", "expensive", "vegan")
         val sum = restaurantName.sumOf { it.code }
         return listOf(tags[sum % 3], tags[((sum % 3) + (sum % 2 + 1)) % 3])

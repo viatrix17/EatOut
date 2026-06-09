@@ -245,13 +245,14 @@ fun AppRightDrawer(
 @Composable
 fun FilterBottomSheet(
     onDismiss: () -> Unit,
-    viewModel: RestaurantViewModel = viewModel()
+    labels: List<String>,
+    selectedOptions: List<String>,
+    onOptionToggled: (String) -> Unit,
+    currentSortOrder: SortOrder,
+    onSortToggle: () -> Unit
 ) {
 
-    val labels by viewModel.allLabels.collectAsState()
-    val selectedTags by viewModel.selectedTags.collectAsState()
-    val currentSort by viewModel.currentSort.collectAsState()
-    val sortOrder by viewModel.sortOrder.collectAsState()
+
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() }
@@ -264,11 +265,12 @@ fun FilterBottomSheet(
             )
             Row {
                 Column(modifier = Modifier.weight(2f)) {
+//                    Text("Liczba dostępnych kategorii: ${labels.size}")
                     FilterDropdown(
                         label = "Category",
                         options = labels,
-                        selectedOptions = selectedTags,
-                        onOptionToggled = { tag -> viewModel.toggleTag(tag) }
+                        selectedOptions = selectedOptions,
+                        onOptionToggled = { tag -> onOptionToggled(tag) }
                     )
 
                 }
@@ -278,17 +280,17 @@ fun FilterBottomSheet(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { viewModel.toggleSortOrder() }
+                            .clickable { onSortToggle() }
                             .padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = if (sortOrder == SortOrder.ASC) "From A to Z" else "From Z to A",
+                            text = if (currentSortOrder == SortOrder.ASC) "From A to Z" else "From Z to A",
                             modifier = Modifier.weight(1f),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Icon(
-                            imageVector = if (sortOrder == SortOrder.ASC) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
+                            imageVector = if (currentSortOrder == SortOrder.ASC) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
                             contentDescription = "Change sort order"
                         )
                     }

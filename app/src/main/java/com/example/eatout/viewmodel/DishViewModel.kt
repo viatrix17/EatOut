@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 
 enum class DishesListType { ALL, TO_TRY, FAVORITES }
@@ -155,5 +156,29 @@ class DishViewModel : ViewModel() {
     fun toggleToTry(id: Int){
         // TO DO DODAĆ ŻEBY ZMIENIAŁO FAVOURITE - wywoływanie funkcji z modelu (klasy)
     }
+
+    private val _selectedTags = MutableStateFlow<List<String>>(emptyList())
+    val selectedTags = _selectedTags.asStateFlow()
+
+    fun toggleTag(tag: String) {
+        _selectedTags.update { current ->
+            if (current.contains(tag)) current - tag else current + tag
+        }
+    }
+
+    private val _currentSort = MutableStateFlow(SortOption.NAME)
+    val currentSort = _currentSort.asStateFlow()
+
+    private val _sortOrder = MutableStateFlow(SortOrder.ASC)
+    val sortOrder = _sortOrder.asStateFlow()
+
+    fun toggleSortOrder() {
+        _sortOrder.update { if (it == SortOrder.ASC) SortOrder.DESC else SortOrder.ASC }
+    }
+
+    val allLabels = MutableStateFlow(
+        allDishes.flatMap { it.labels }.distinct().sorted()
+    ).asStateFlow()
+
 
 }

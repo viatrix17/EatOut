@@ -65,6 +65,7 @@ fun FilterButton (
 
 @Composable
 fun SettingsButton(
+    modifier: Modifier = Modifier,
     label: String,
     value: String,
     onClick: () -> Unit
