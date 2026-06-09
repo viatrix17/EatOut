@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -12,6 +13,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.eatout.data.repository.RestaurantRepository
+import com.example.eatout.viewmodel.NoteViewModel
 import com.example.eatout.ui.screens.DetailsScreen
 import com.example.eatout.ui.screens.DishesScreen
 import com.example.eatout.ui.screens.HomeScreen
@@ -19,19 +22,22 @@ import com.example.eatout.ui.screens.LocationSettingsScreen
 import com.example.eatout.ui.screens.ModeSettingsScreen
 import com.example.eatout.ui.screens.RecommendationScreen
 import com.example.eatout.ui.screens.RestaurantListScreen
+import com.example.eatout.util.LocalRepository
 import com.example.eatout.viewmodel.MainViewModel
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-//    isDarkTheme: Boolean,
+    repository: RestaurantRepository,
     isLoading: Boolean,
     isTablet: Boolean,
     modifier: Modifier = Modifier
 ) {
     val viewModel: MainViewModel = viewModel()
+    val noteViewModel: NoteViewModel = viewModel()
     Box(modifier = Modifier) {
-        NavHost(
+        CompositionLocalProvider(LocalRepository provides repository) {
+            NavHost(
                 navController = navController,
                 startDestination = "home",
                 modifier = modifier
@@ -79,7 +85,7 @@ fun AppNavHost(
                     RestaurantListScreen(
                         isTablet = isTablet,
                         navController = navController,
-                        listType = "FAVORITES"
+                        listType = "FAVORITES",
                     )
                 }
 
@@ -96,7 +102,7 @@ fun AppNavHost(
                     route = "details/{restaurantId}",
                     arguments = listOf(navArgument("restaurantId") { type = NavType.IntType })
                 ) { backStackEntry ->
-                    val restaurantId = backStackEntry.arguments?.getInt("restaurantId") ?: -1
+                    val restaurantId = backStackEntry.arguments?.getLong("restaurantId") ?: -1
 
                     DetailsScreen(restaurantId = restaurantId)
                 }
@@ -122,7 +128,9 @@ fun AppNavHost(
                         viewModel = viewModel
                     )
                 }
+
             }
+        }
         if (isLoading) {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()

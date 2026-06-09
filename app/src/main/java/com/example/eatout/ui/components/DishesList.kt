@@ -39,7 +39,7 @@ import com.example.eatout.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextOverflow
-import com.example.eatout.viewmodel.Dish
+import com.example.eatout.domain.model.Dish
 import com.example.eatout.viewmodel.DishViewModel
 
 @Composable

@@ -9,34 +9,26 @@ import kotlinx.coroutines.flow.map
 
 val Context.dataStore by preferencesDataStore(name = "settings")
 
-object PreferencesManager {
+
+// PreferencesManager.kt
+class PreferencesManager(private val context: Context) {
+
     private val DARK_MODE_KEY = booleanPreferencesKey("is_dark_mode")
     private val USE_SYSTEM_THEME_KEY = booleanPreferencesKey("use_system_theme")
 
-    suspend fun saveDarkMode(context: Context, isDark: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[DARK_MODE_KEY] = isDark
-        }
+    suspend fun saveDarkMode(isDark: Boolean) {
+        context.dataStore.edit { it[DARK_MODE_KEY] = isDark }
     }
 
-    fun getDarkMode(context: Context): Flow<Boolean> {
-        return context.dataStore.data.map { preferences ->
-            preferences[DARK_MODE_KEY] ?: false
-        }
+    fun getDarkMode(): Flow<Boolean> {
+        return context.dataStore.data.map { it[DARK_MODE_KEY] ?: false }
     }
 
-    suspend fun saveUseSystemTheme(context: Context, useSystem: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[USE_SYSTEM_THEME_KEY] = useSystem
-        }
-
+    suspend fun saveUseSystemTheme(useSystem: Boolean) {
+        context.dataStore.edit { it[USE_SYSTEM_THEME_KEY] = useSystem }
     }
 
-    fun getUseSystemTheme(context: Context): Flow<Boolean> {
-        return context.dataStore.data.map { preferences ->
-            preferences[USE_SYSTEM_THEME_KEY] ?: false
-        }
+    fun getUseSystemTheme(): Flow<Boolean> {
+        return context.dataStore.data.map { it[USE_SYSTEM_THEME_KEY] ?: true }
     }
-
-
 }

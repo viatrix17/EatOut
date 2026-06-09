@@ -2,22 +2,13 @@ package com.example.eatout.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.eatout.domain.model.Dish
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-data class Dish(
-    val id: Int,
-    val restaurantId: Int,
-    val name: String,
-    val price: Double,
-    val ingredients: String,
-    val labels: List<String>,
-    val isFavorite: Boolean,
-    val isToTry: Boolean
-)
 
 enum class DishesListType { ALL, TO_TRY, FAVORITES }
 
@@ -25,7 +16,16 @@ class DishViewModel : ViewModel() {
 
     private val allDishes = listOf(
         // 1: Pizzeria Da Grasso
-        Dish(1, 1, "Pizza Margherita", 32.0, "sos pomidorowy, mozzarella, bazylia", listOf("włoskie", "wegetariańskie"), false, false),
+        Dish(
+            1,
+            1,
+            "Pizza Margherita",
+            32.0,
+            "sos pomidorowy, mozzarella, bazylia",
+            listOf("włoskie", "wegetariańskie"),
+            false,
+            false
+        ),
         Dish(2, 1, "Pizza Pepperoni", 38.0, "sos pomidorowy, mozzarella, pepperoni", listOf("mięsne", "ostre"), false, false),
         Dish(3, 1, "Pizza Capricciosa", 40.0, "sos pomidorowy, mozzarella, szynka, pieczarki", listOf("włoskie", "klasyczne"), false, false),
         Dish(46, 1, "Spaghetti Carbonara", 36.0, "jajka, ser pecorino, guanciale, pieprz", listOf("włoskie", "klasyczne"), false, false),
@@ -144,7 +144,7 @@ class DishViewModel : ViewModel() {
         _searchQuery.value = ""
     }
 
-    fun getDishesForRestaurant(id: Int): List<Dish> {
+    fun getDishesForRestaurant(id: Long): List<Dish> {
         return allDishes.filter { it.restaurantId == id }
     }
 

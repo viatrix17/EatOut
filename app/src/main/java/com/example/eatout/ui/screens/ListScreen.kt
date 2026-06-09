@@ -41,17 +41,23 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import com.example.eatout.ui.components.FilterButton
-import com.example.eatout.viewmodel.Restaurant
+import com.example.eatout.domain.model.Restaurant
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import com.example.eatout.data.Note
+import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.ui.components.FilterBottomSheet
+import com.example.eatout.util.LocalRepository
+import com.example.eatout.util.RestaurantViewModelFactory
 import com.example.eatout.viewmodel.ListType
 import com.example.eatout.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RestaurantListScreen(
-    viewModel: RestaurantViewModel = viewModel(),
+    repository: RestaurantRepository = LocalRepository.current,
+    viewModel: RestaurantViewModel = viewModel(factory = RestaurantViewModelFactory(repository)),
     isTablet: Boolean,
     navController: NavHostController,
     listType: String = "ALL",
@@ -72,6 +78,7 @@ fun RestaurantListScreen(
     LaunchedEffect(Unit) {
         viewModel.setListType(targetType)
     }
+
 
     val listState = rememberLazyListState()
     val keyboardController = LocalSoftwareKeyboardController.current

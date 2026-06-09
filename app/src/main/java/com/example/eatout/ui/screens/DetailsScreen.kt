@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.eatout.R
 import com.example.eatout.viewmodel.DishViewModel
-import com.example.eatout.viewmodel.Restaurant
+import com.example.eatout.domain.model.Restaurant
 import com.example.eatout.viewmodel.RestaurantViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,12 +41,12 @@ import com.example.eatout.ui.components.CustomAlertDialog
 import com.example.eatout.ui.components.DishCard
 import com.example.eatout.ui.components.DishesList
 import com.example.eatout.ui.components.TagLabel
-import com.example.eatout.viewmodel.Dish
+import com.example.eatout.domain.model.Dish
 import androidx.compose.foundation.lazy.items
 
 @Composable
 fun DetailsScreen(
-    restaurantId: Int,
+    restaurantId: Long,
     restaurantViewModel: RestaurantViewModel = viewModel(),
     dishViewModel: DishViewModel = viewModel()
 ){
@@ -169,7 +169,7 @@ fun DetailsPhoneLayout(
                             .fillMaxWidth()
                     ) {
                         Text(
-                            "${restaurant.location}",
+                            "${restaurant.address}",
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

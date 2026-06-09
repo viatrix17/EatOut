@@ -13,15 +13,18 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.eatout.MainActivity
 import com.example.eatout.ui.components.SettingsButton
 import com.example.eatout.ui.components.SettingsDropdown
 import com.example.eatout.viewmodel.MainViewModel
+import androidx.compose.runtime.getValue
 
 @Composable
 fun LocationSettingsScreen(
@@ -31,11 +34,14 @@ fun LocationSettingsScreen(
     // TO DO pobieranie możliwych miast i krajów z api w Main View Model
 
     // MOCK DATA
-    val city = "CITY_TEST"//by viewModel.selectedCity.collectAsState()
-    val country = "COUNTRY_TEST"//by viewModel.selectedCountry.collectAsState()
-    val isLocationEnabled = false //by viewModel.isLocationEnabled.collectAsState()
+//    val city = "CITY_TEST"//
+    val city by viewModel.selectedCity.collectAsState()
+//    val country = "COUNTRY_TEST"
+    val country by viewModel.selectedCountry.collectAsState()
+//    val isLocationEnabled = false
+    val isLocationEnabled by viewModel.isLocationEnabled.collectAsState()
 
-    val cities = listOf("Warszawa", "Kraków", "Berlin") // Przykładowe dane
+    val cities = listOf("Warszawa", "Kraków", "Berlin")
     val countries = listOf("Poland", "Germany", "France")
 
     LocationSettingsPhoneLayout(
@@ -43,8 +49,8 @@ fun LocationSettingsScreen(
         currentCountry = country,
         isLocationEnabled = isLocationEnabled,
         allCities = cities,
-        allCountries = countries
-
+        allCountries = countries,
+        viewModel = viewModel
     )
 }
 
@@ -54,7 +60,8 @@ fun LocationSettingsPhoneLayout(
     currentCountry: String,
     isLocationEnabled: Boolean,
     allCities: List<String>,
-    allCountries: List<String>
+    allCountries: List<String>,
+    viewModel: MainViewModel
 ){
     Column(
         modifier = Modifier.fillMaxWidth().padding(16.dp)
@@ -63,7 +70,7 @@ fun LocationSettingsPhoneLayout(
             label = "City",
             currentValue = currentCity,
             options = allCities,
-            onSelected = {/* TO DO zmiana w VM */}
+            onSelected = { selectedCity -> viewModel.updateCity(selectedCity) }
         )
         HorizontalDivider(
             thickness = 0.5.dp,
@@ -73,7 +80,7 @@ fun LocationSettingsPhoneLayout(
             label = "Country",
             currentValue = currentCountry,
             options = allCountries,
-            onSelected = {/* TO DO zmiana w VM */}
+            onSelected = { selectedCountry -> viewModel.updateCity(selectedCountry) }
         )
         HorizontalDivider(
             thickness = 0.5.dp,
@@ -81,7 +88,7 @@ fun LocationSettingsPhoneLayout(
         )
 
         SettingsButton(
-            onClick = {/* TO DO wywołanie zmiany flagi */},
+            onClick = { viewModel.toggleLocationEnabled() },
             label =  "Location access",
             value =  if (!isLocationEnabled) "Allow location access" else "Disable location access"
         )
