@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -63,7 +64,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.eatout.data.repository.LocationRepository
 import com.example.eatout.data.repository.RestaurantRepository
+import com.example.eatout.domain.model.Restaurant
 import com.example.eatout.network.RetrofitInstance
+import com.example.eatout.ui.screens.ulubione
 import com.example.eatout.util.MainViewModelFactory
 import com.example.eatout.util.PreferencesManager
 

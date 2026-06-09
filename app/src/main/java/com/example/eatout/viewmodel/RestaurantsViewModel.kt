@@ -1,12 +1,16 @@
 package com.example.eatout.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.eatout.data.Note
 import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.domain.model.Restaurant
+import com.example.eatout.ui.screens.ulubione
 import com.example.eatout.util.RestaurantProcessor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -165,13 +169,21 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
     fun getRestaurantById(id: Long): Restaurant? {
         return allRestaurants.value.find { it.id == id }
     }
+    fun getFavouriteById(id: Long): Restaurant?{
+        return ulubione.favs.find { it.id == id }
+    }
 
 
     fun toggleFavourite(rest : Restaurant, noteViewModel: NoteViewModel){
-        if(getRestaurantById(rest.id) == null){
+
+        Log.d("TAG", "toggling")
+        Log.d("TAG", getRestaurantById(rest.id).toString())
+        if(getFavouriteById(rest.id) == null){
+            Log.d("TAG", "adding")
             addToFavourite(rest, noteViewModel)
         }else{
             var note : Note = Note()
+            note.id = rest.id
             note.restauracja=rest.name
             note.lon=rest.lon
             note.lan=rest.lan
@@ -191,6 +203,7 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
 
     fun addToFavourite(rest : Restaurant, noteViewModel: NoteViewModel){
         var note : Note = Note()
+        note.id=rest.id
         note.restauracja = rest.name;
         note.lokalizacja = rest.address
         note.tagi = RestaurantProcessor.returnTag(rest.name)

@@ -72,7 +72,9 @@ fun AppNavHost(
                     RestaurantListScreen(
                         isTablet = isTablet,
                         navController = navController,
-                        viewModel = restaurantViewModel
+                        viewModel = restaurantViewModel,
+                        noteViewModel = noteViewModel,
+                        favourites = false
                     )
                 }
                 composable(route = "closest") {
@@ -80,7 +82,9 @@ fun AppNavHost(
                         isTablet = isTablet,
                         navController = navController,
                         showDistance = true,
-                        viewModel = restaurantViewModel
+                        viewModel = restaurantViewModel,
+                        noteViewModel = noteViewModel,
+                        favourites = false
                     )
                 }
                 composable(route = "recommendation")
@@ -97,7 +101,9 @@ fun AppNavHost(
                         isTablet = isTablet,
                         navController = navController,
                         listType = "FAVORITES",
-                        viewModel = restaurantViewModel
+                        viewModel = restaurantViewModel,
+                        noteViewModel = noteViewModel,
+                        favourites = true
                     )
                 }
 
@@ -107,7 +113,9 @@ fun AppNavHost(
                         isTablet = isTablet,
                         navController = navController,
                         listType = "TO_VISIT",
-                        viewModel = restaurantViewModel
+                        viewModel = restaurantViewModel,
+                        noteViewModel = noteViewModel,
+                        favourites = false
                     )
                 }
 
@@ -120,7 +128,8 @@ fun AppNavHost(
                     DetailsScreen(
                         restaurantId = restaurantId,
                         restaurantViewModel = restaurantViewModel,
-                        dishViewModel = dishViewModel
+                        dishViewModel = dishViewModel,
+                        noteViewModel = noteViewModel
                     )
                 }
 

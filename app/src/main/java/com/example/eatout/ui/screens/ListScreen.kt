@@ -30,6 +30,7 @@ import com.example.eatout.viewmodel.RestaurantViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -43,6 +44,12 @@ import com.example.eatout.util.RestaurantViewModelFactory
 import com.example.eatout.viewmodel.ListType
 import com.example.eatout.viewmodel.NoteViewModel
 
+
+class ulubione(){
+    companion object {
+        var favs: ArrayList<Restaurant> = arrayListOf<Restaurant>()
+    }
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RestaurantListScreen(
@@ -51,7 +58,8 @@ fun RestaurantListScreen(
     navController: NavHostController,
     listType: String = "ALL",
     showDistance: Boolean = false,
-    noteViewModel: NoteViewModel
+    noteViewModel: NoteViewModel,
+    favourites: Boolean
 ) {
     val targetType = when (listType) {
         "FAVORITES" -> ListType.FAVORITES
@@ -86,7 +94,8 @@ fun RestaurantListScreen(
         showBottomSheet = showBottomSheet,
         viewModel = viewModel,
         showDistance = showDistance,
-        noteViewModel = noteViewModel
+        noteViewModel = noteViewModel,
+        favourites =favourites
     )
 }
 
@@ -103,8 +112,23 @@ fun RestaurantListScreenPhoneLayout(
     showBottomSheet: Boolean,
     viewModel: RestaurantViewModel,
     showDistance: Boolean,
-    noteViewModel: NoteViewModel
+    noteViewModel: NoteViewModel,
+    favourites: Boolean
 ) {
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(scope) {
+        var tmp = noteViewModel.getNotes("favourites")
+        ulubione.favs = arrayListOf<Restaurant>()
+        for(i in tmp){
+            var dodaj : Restaurant = Restaurant(id=i.id, name=i.restauracja, address = i.lokalizacja, lon=i.lon, lan=i.lan)
+            ulubione.favs.add(dodaj)
+        }
+    }
+    var d = data
+    if(favourites==true){
+        d= ulubione.favs
+    }
     Column {
         Row(
             modifier = Modifier
@@ -136,7 +160,7 @@ fun RestaurantListScreenPhoneLayout(
 
         Box(modifier = Modifier.fillMaxSize()) {
             RestaurantsList(
-                data = data,
+                data = d,
                 onRestaurantSelected = { restaurant -> navController.navigate("details/${restaurant.id}") },
                 listState = listState,
                 viewModel = viewModel,
