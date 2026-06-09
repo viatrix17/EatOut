@@ -90,7 +90,7 @@ fun RestaurantsList(
                     if (restaurant.isToVisit) {
                         showAlreadyAddedDialog = true
                     } else {
-                        viewModel.toggleToVisit(restaurant.id)
+                        viewModel.toggleToVisit(restaurant, noteViewModel)
                     }
                 },
                 showDistance = showDistance,

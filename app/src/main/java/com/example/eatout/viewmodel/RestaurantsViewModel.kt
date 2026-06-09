@@ -172,6 +172,9 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
     fun getFavouriteById(id: Long): Restaurant?{
         return ulubione.favs.find { it.id == id }
     }
+    fun getVisitById(id: Long): Restaurant?{
+        return ulubione.visit.find { it.id == id }
+    }
 
 
     fun toggleFavourite(rest : Restaurant, noteViewModel: NoteViewModel){
@@ -196,8 +199,24 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
         // TO DO DODAĆ ŻEBY ZMIENIAŁO FAVOURITE - wywoływanie funkcji z modelu (klasy)
     }
 
-    fun toggleToVisit(id: Long){
+    fun toggleToVisit(rest : Restaurant, noteViewModel: NoteViewModel){
+        Log.d("TAG", "toggling")
+        Log.d("TAG", getRestaurantById(rest.id).toString())
+        if(getVisitById(rest.id) == null){
+            Log.d("TAG", "adding (visit)")
+            addToVisit(rest, noteViewModel)
+        }else{
+            var note : Note = Note()
+            note.id = rest.id
+            note.restauracja=rest.name
+            note.lon=rest.lon
+            note.lan=rest.lan
+            note.lokalizacja=rest.address
+            noteViewModel.run {
+                removeNote(note, "rest_to_visit")
+            }
 
+        }
         // TO DO DODAĆ ŻEBY ZMIENIAŁO FAVOURITE - wywoływanie funkcji z modelu (klasy)
     }
 
@@ -217,6 +236,7 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
 
     fun addToVisit(rest : Restaurant, noteViewModel: NoteViewModel){
         var note : Note = Note()
+        note.id=rest.id
         note.restauracja = rest.name;
         note.lokalizacja = rest.address
         note.tagi = RestaurantProcessor.returnTag(rest.name)

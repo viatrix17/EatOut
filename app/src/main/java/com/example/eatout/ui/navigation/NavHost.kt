@@ -74,7 +74,8 @@ fun AppNavHost(
                         navController = navController,
                         viewModel = restaurantViewModel,
                         noteViewModel = noteViewModel,
-                        favourites = false
+                        favourites = false,
+                        tovisit = false
                     )
                 }
                 composable(route = "closest") {
@@ -84,7 +85,8 @@ fun AppNavHost(
                         showDistance = true,
                         viewModel = restaurantViewModel,
                         noteViewModel = noteViewModel,
-                        favourites = false
+                        favourites = false,
+                        tovisit = false
                     )
                 }
                 composable(route = "recommendation")
@@ -103,7 +105,8 @@ fun AppNavHost(
                         listType = "FAVORITES",
                         viewModel = restaurantViewModel,
                         noteViewModel = noteViewModel,
-                        favourites = true
+                        favourites = true,
+                        tovisit = false
                     )
                 }
 
@@ -115,7 +118,8 @@ fun AppNavHost(
                         listType = "TO_VISIT",
                         viewModel = restaurantViewModel,
                         noteViewModel = noteViewModel,
-                        favourites = false
+                        favourites = false,
+                        tovisit = true
                     )
                 }
 

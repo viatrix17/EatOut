@@ -1,5 +1,6 @@
 package com.example.eatout.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,6 +49,7 @@ import com.example.eatout.viewmodel.NoteViewModel
 class ulubione(){
     companion object {
         var favs: ArrayList<Restaurant> = arrayListOf<Restaurant>()
+        var visit: ArrayList<Restaurant> = arrayListOf<Restaurant>()
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +61,8 @@ fun RestaurantListScreen(
     listType: String = "ALL",
     showDistance: Boolean = false,
     noteViewModel: NoteViewModel,
-    favourites: Boolean
+    favourites: Boolean,
+    tovisit: Boolean
 ) {
     val targetType = when (listType) {
         "FAVORITES" -> ListType.FAVORITES
@@ -95,7 +98,8 @@ fun RestaurantListScreen(
         viewModel = viewModel,
         showDistance = showDistance,
         noteViewModel = noteViewModel,
-        favourites =favourites
+        favourites =favourites,
+        tovisit=tovisit
     )
 }
 
@@ -113,7 +117,8 @@ fun RestaurantListScreenPhoneLayout(
     viewModel: RestaurantViewModel,
     showDistance: Boolean,
     noteViewModel: NoteViewModel,
-    favourites: Boolean
+    favourites: Boolean,
+    tovisit: Boolean
 ) {
     val scope = rememberCoroutineScope()
 
@@ -124,10 +129,22 @@ fun RestaurantListScreenPhoneLayout(
             var dodaj : Restaurant = Restaurant(id=i.id, name=i.restauracja, address = i.lokalizacja, lon=i.lon, lan=i.lan)
             ulubione.favs.add(dodaj)
         }
+        var tmp2 = noteViewModel.getNotes("rest_to_visit")
+        ulubione.visit = arrayListOf<Restaurant>()
+        for(i in tmp2){
+            var dodaj : Restaurant = Restaurant(id=i.id, name=i.restauracja, address = i.lokalizacja, lon=i.lon, lan=i.lan)
+            ulubione.visit.add(dodaj)
+        }
     }
     var d = data
     if(favourites==true){
+        Log.d("TAG", "wyświetlam ulubione")
         d= ulubione.favs
+    }else if(tovisit==true){
+        Log.d("TAG", "wyświetlam to visit")
+        d=ulubione.visit
+    }else{
+        Log.d("TAG", "wyświetlam coś innego")
     }
     Column {
         Row(
