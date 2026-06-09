@@ -190,6 +190,7 @@ class MainActivity : ComponentActivity() {
                                         AppNavHost(
                                             navController = navController,
                                             repository = restaurantRepository,
+                                            locationRepository = locationRepository,
                                             isLoading = isLoading,
                                             isTablet = isTablet,
                                             modifier = Modifier.padding(innerPadding)

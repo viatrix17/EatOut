@@ -13,6 +13,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.eatout.data.repository.LocationRepository
 import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.viewmodel.NoteViewModel
 import com.example.eatout.ui.screens.DetailsScreen
@@ -32,6 +33,7 @@ import com.example.eatout.viewmodel.RestaurantViewModel
 fun AppNavHost(
     navController: NavHostController,
     repository: RestaurantRepository,
+    locationRepository: LocationRepository,
     isLoading: Boolean,
     isTablet: Boolean,
     modifier: Modifier = Modifier
@@ -39,7 +41,7 @@ fun AppNavHost(
     val viewModel: MainViewModel = viewModel()
     val noteViewModel: NoteViewModel = viewModel()
 
-    val factory = RestaurantViewModelFactory(repository)
+    val factory = RestaurantViewModelFactory(repository, locationRepository)
     val restaurantViewModel: RestaurantViewModel = viewModel(factory = factory)
 
     val dishViewModel: DishViewModel = viewModel()
@@ -72,7 +74,8 @@ fun AppNavHost(
                     RestaurantListScreen(
                         isTablet = isTablet,
                         navController = navController,
-                        viewModel = restaurantViewModel
+                        viewModel = restaurantViewModel,
+                        locationRepository = locationRepository
                     )
                 }
                 composable(route = "closest") {
@@ -80,7 +83,8 @@ fun AppNavHost(
                         isTablet = isTablet,
                         navController = navController,
                         showDistance = true,
-                        viewModel = restaurantViewModel
+                        viewModel = restaurantViewModel,
+                        locationRepository = locationRepository
                     )
                 }
                 composable(route = "recommendation")
@@ -97,7 +101,8 @@ fun AppNavHost(
                         isTablet = isTablet,
                         navController = navController,
                         listType = "FAVORITES",
-                        viewModel = restaurantViewModel
+                        viewModel = restaurantViewModel,
+                        locationRepository = locationRepository
                     )
                 }
 
@@ -107,7 +112,8 @@ fun AppNavHost(
                         isTablet = isTablet,
                         navController = navController,
                         listType = "TO_VISIT",
-                        viewModel = restaurantViewModel
+                        viewModel = restaurantViewModel,
+                        locationRepository = locationRepository
                     )
                 }
 

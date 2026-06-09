@@ -56,7 +56,7 @@ import androidx.compose.runtime.setValue
 
 @Composable
 fun RestaurantsList(
-    data: List<Restaurant>,
+    data: List<Pair<Restaurant, Double>>,
     onRestaurantSelected: (Restaurant) -> Unit,
     listState: LazyListState = rememberLazyListState(),
     viewModel: RestaurantViewModel,
@@ -79,7 +79,7 @@ fun RestaurantsList(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(16.dp)
     ) {
-        items(data, key = { it.id }) { restaurant ->
+        items(data, key = { it.first.id }) { (restaurant, distance) ->
             RestaurantCard(
                 restaurant = restaurant,
                 onClick = { onRestaurantSelected(restaurant) },
@@ -91,6 +91,7 @@ fun RestaurantsList(
                         viewModel.toggleToVisit(restaurant.id)
                     }
                 },
+                distance = distance,
                 showDistance = showDistance
             )
         }
@@ -103,16 +104,9 @@ fun RestaurantCard(
     onClick: () -> Unit,
     viewModel: RestaurantViewModel,
     onAddClick: () -> Unit,
+    distance: Double,
     showDistance: Boolean
 ) {
-    val distance = if (showDistance){
-        100 // MOCK DATA
-    }
-//    {
-//        viewModel.calculateDistanceFor(restaurant.id) // TODO
-//    }
-        else null
-
     Card(
         onClick = onClick,
         modifier = Modifier
@@ -171,8 +165,12 @@ fun RestaurantCard(
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-                if (distance != null) Text("DIST")
-                // TODO ADD REAL DISTANCE
+                if (showDistance) {
+                    Text(
+                        text = "%.1f km".format(distance),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
                 Row(horizontalArrangement = Arrangement.End) {
                     IconButton(onClick = onAddClick) {
                         Icon(

@@ -18,12 +18,13 @@ class MainViewModelFactory(
 }
 
 class RestaurantViewModelFactory(
-    private val repository: RestaurantRepository
+    private val repository: RestaurantRepository,
+    private val locationRepository: LocationRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RestaurantViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return RestaurantViewModel(repository) as T
+            return RestaurantViewModel(repository, locationRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

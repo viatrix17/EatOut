@@ -6,3 +6,4 @@ import com.example.eatout.data.repository.RestaurantRepository
 val LocalRepository = staticCompositionLocalOf<RestaurantRepository> {
     error("RestaurantRepository was not provided in CompositionLocalProvider")
 }
+

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.eatout.data.Note
+import com.example.eatout.data.repository.LocationRepository
 import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.domain.model.Restaurant
 import com.example.eatout.util.RestaurantProcessor
@@ -23,7 +24,10 @@ enum class SortOption { NAME }
 
 enum class SortOrder { ASC, DESC }
 
-class RestaurantViewModel(private val repository: RestaurantRepository) : ViewModel() {
+class RestaurantViewModel(
+    private val repository: RestaurantRepository,
+    private val locationRepository: LocationRepository
+) : ViewModel() {
 
     private val allRestaurantsMock = listOf(
         Restaurant(
@@ -51,15 +55,15 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
         Restaurant(15, "Steakhouse Prime", "Poznań, Centrum",  "Amerykańska", listOf("steakhouse", "klasyczne"), true, false)
     )
 
-    companion object {
-        fun provideFactory(repository: RestaurantRepository): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return RestaurantViewModel(repository) as T
-                }
-            }
-    }
+//    companion object {
+//        fun provideFactory(repository: RestaurantRepository): ViewModelProvider.Factory =
+//            object : ViewModelProvider.Factory {
+//                @Suppress("UNCHECKED_CAST")
+//                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//                    return RestaurantViewModel(repository) as T
+//                }
+//            }
+//    }
 
     val allRestaurants = repository.restaurantsFlow
         .stateIn(
@@ -137,6 +141,31 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
         initialValue = emptyList()
     )
 
+    val userLocation = locationRepository.location
+
+    val restaurantsWithDistance: StateFlow<List<Pair<Restaurant, Double>>> = combine(
+        filteredRestaurants, // Twoja obecna przefiltrowana lista
+        userLocation
+    ) { restaurants, location ->
+        if (location != null) {
+            Log.d("DEBUG_DIST", "Moja lokalizacja: ${location.latitude}, ${location.longitude}")
+        } else {
+            Log.d("DEBUG_DIST", "Lokalizacja jest NULL!")
+        }
+        if (location == null) {
+            restaurants.map { it to 0.0 } // Jeśli brak lokalizacji, dystans 0 lub -1
+        } else {
+            restaurants.map { restaurant ->
+                // Użyj swojego RestaurantProcessor do obliczeń
+                val dist = RestaurantProcessor.calculateDistance(
+                    location.latitude, location.longitude,
+                    restaurant.lan, restaurant.lon
+                )
+                restaurant to dist
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
 
     val allLabels: StateFlow<List<String>> = allRestaurants
         .map { restaurants ->
@@ -174,6 +203,7 @@ class RestaurantViewModel(private val repository: RestaurantRepository) : ViewMo
     fun toggleToVisit(id: Long){
         // TO DO DODAĆ ŻEBY ZMIENIAŁO FAVOURITE - wywoływanie funkcji z modelu (klasy)
     }
+
 
     fun addToFavourite(rest : Restaurant, noteViewModel: NoteViewModel){
         var note : Note = Note()

@@ -49,6 +49,10 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
+            locationRepository.startLocationUpdates()
+        }
+
+        viewModelScope.launch {
             preferencesManager.getDarkMode().collect { darkMode ->
                 _isDarkThemeCustom.value = darkMode
             }

@@ -1,5 +1,9 @@
 package com.example.eatout.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +27,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -45,7 +50,10 @@ import com.example.eatout.domain.model.Restaurant
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import com.example.eatout.data.Note
+import com.example.eatout.data.repository.LocationRepository
 import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.ui.components.FilterBottomSheet
 import com.example.eatout.util.LocalRepository
@@ -59,11 +67,37 @@ import com.example.eatout.viewmodel.SortOrder
 @Composable
 fun RestaurantListScreen(
     viewModel: RestaurantViewModel,
+    locationRepository: LocationRepository,
     isTablet: Boolean,
     navController: NavHostController,
     listType: String = "ALL",
     showDistance: Boolean = false
 ) {
+    val context = LocalContext.current
+
+    // Launcher dla uprawnień
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (granted) {
+            locationRepository.startLocationUpdates()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationRepository.startLocationUpdates()
+        } else {
+            launcher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { locationRepository.stopLocationUpdates() }
+    }
+
     val targetType = when (listType) {
         "FAVORITES" -> ListType.FAVORITES
         "TO_VISIT" -> ListType.TO_VISIT
@@ -71,8 +105,15 @@ fun RestaurantListScreen(
     }
 
     val searchQuery by viewModel.searchQuery.collectAsState()
-    val restaurants by viewModel.filteredRestaurants.collectAsState()
+    val restaurantsWithDist by viewModel.restaurantsWithDistance.collectAsState()
+    val filteredOnly by viewModel.filteredRestaurants.collectAsState()
 
+
+    val displayData = if (showDistance) {
+        restaurantsWithDist
+    } else {
+        filteredOnly.map { it to 0.0 }
+    }
     LaunchedEffect(Unit) {
         viewModel.selectAll()
     }
@@ -94,7 +135,7 @@ fun RestaurantListScreen(
     RestaurantListScreenPhoneLayout(
         navController = navController,
         listState = listState,
-        data = restaurants,
+        data = displayData,
         searchQuery = searchQuery,
         onSearchQueryChange = { viewModel.onSearchQueryChange(it)},
         keyboardController = keyboardController,
@@ -116,7 +157,7 @@ fun RestaurantListScreen(
 fun RestaurantListScreenPhoneLayout(
     navController: NavHostController,
     listState: LazyListState = rememberLazyListState(),
-    data: List<Restaurant>,
+    data: List<Pair<Restaurant, Double>>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     keyboardController: SoftwareKeyboardController?,
