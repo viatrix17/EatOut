@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.eatout.data.Note
+import com.example.eatout.data.model.Note
+import com.example.eatout.data.repository.NoteRepository
 import com.example.eatout.data.repository.LocationRepository
 import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.domain.model.Restaurant
+import com.example.eatout.domain.model.RestaurantUIState
 import com.example.eatout.util.RestaurantProcessor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,7 +28,8 @@ enum class SortOrder { ASC, DESC }
 
 class RestaurantViewModel(
     private val repository: RestaurantRepository,
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val noteRepository: NoteRepository
 ) : ViewModel() {
 
     private val allRestaurantsMock = listOf(
@@ -102,20 +105,42 @@ class RestaurantViewModel(
         _sortOrder.update { if (it == SortOrder.ASC) SortOrder.DESC else SortOrder.ASC }
     }
 
-    val filteredRestaurants: StateFlow<List<Restaurant>> = combine(
-        _listType, _searchQuery, _selectedTags, _currentSort, _sortOrder, allRestaurants
+    val favoriteNotes = MutableStateFlow<List<Note>>(emptyList())
+    val toVisitNotes = MutableStateFlow<List<Note>>(emptyList())
+
+    val filteredRestaurants: StateFlow<List<RestaurantUIState>> = combine(
+        _listType, _searchQuery, _selectedTags, _currentSort, _sortOrder, allRestaurants, favoriteNotes, toVisitNotes
     ) { args ->
+        // Jawne rzutowanie każdego elementu tablicy args
         val type = args[0] as ListType
         val query = args[1] as String
         val tags = args[2] as List<String>
         val sort = args[3] as SortOption
         val order = args[4] as SortOrder
-        val restaurants = args[5] as List<Restaurant>
+        val allRests = args[5] as List<Restaurant>
+        val favs = args[6] as List<Note>
+        val toVisit = args[7] as List<Note>
+        val favNames = favs.map { it.restauracja }.toSet()
+        val toVisitNames = toVisit.map { it.restauracja }.toSet()
 
-        var list = when (type) {
-            ListType.ALL -> restaurants
-            ListType.TO_VISIT -> restaurants.filter { it.isToVisit }
-            ListType.FAVORITES -> restaurants.filter { it.isFavorite }
+        var list = allRests.map { rest ->
+            RestaurantUIState(
+                id = rest.id,
+                name = rest.name,
+                address = rest.address,
+                cuisineType = rest.cuisineType,
+                tags = rest.tags,
+                lan = rest.lan,
+                lon = rest.lon,
+                isFavorite = favNames.contains(rest.name),
+                isToVisit = toVisitNames.contains(rest.name)
+            )
+        }
+
+        list = when (type) {
+            ListType.ALL -> list
+            ListType.TO_VISIT -> list.filter { it.isToVisit }
+            ListType.FAVORITES -> list.filter { it.isFavorite }
         }
 
         if (query.isNotBlank()) {
@@ -123,28 +148,36 @@ class RestaurantViewModel(
         }
 
         if (tags.isNotEmpty()) {
-            list = list.filter { restaurant ->
-                restaurant.tags.any { it in tags }
+            list = list.filter { uiState ->
+                uiState.tags.any { it in tags }
             }
         }
 
-        val sortedList = if (order == SortOrder.ASC) {
+        if (order == SortOrder.ASC) {
             list.sortedBy { it.name.lowercase() }
         } else {
             list.sortedByDescending { it.name.lowercase() }
         }
-
-        sortedList
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
 
+    init {
+        // Uruchamiamy nasłuchiwanie w momencie stworzenia ViewModelu
+        noteRepository.observeNotes("favourites", { notes ->
+            favoriteNotes.value = notes
+        }, {})
+
+        noteRepository.observeNotes("rest_to_visit", { notes ->
+            toVisitNotes.value = notes
+        }, {})
+    }
     val userLocation = locationRepository.location
 
-    val restaurantsWithDistance: StateFlow<List<Pair<Restaurant, Double>>> = combine(
-        filteredRestaurants, // Twoja obecna przefiltrowana lista
+    val restaurantsWithDistance: StateFlow<List<Pair<RestaurantUIState, Double>>> = combine(
+        filteredRestaurants,
         userLocation
     ) { restaurants, location ->
         if (location != null) {
@@ -153,10 +186,9 @@ class RestaurantViewModel(
             Log.d("DEBUG_DIST", "Lokalizacja jest NULL!")
         }
         if (location == null) {
-            restaurants.map { it to 0.0 } // Jeśli brak lokalizacji, dystans 0 lub -1
+            restaurants.map { it to 0.0 }
         } else {
             restaurants.map { restaurant ->
-                // Użyj swojego RestaurantProcessor do obliczeń
                 val dist = RestaurantProcessor.calculateDistance(
                     location.latitude, location.longitude,
                     restaurant.lan, restaurant.lon

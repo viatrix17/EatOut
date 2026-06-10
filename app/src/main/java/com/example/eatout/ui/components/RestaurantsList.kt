@@ -53,11 +53,12 @@ import com.example.eatout.R
 import com.example.eatout.viewmodel.RestaurantViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.eatout.domain.model.RestaurantUIState
 
 @Composable
 fun RestaurantsList(
-    data: List<Pair<Restaurant, Double>>,
-    onRestaurantSelected: (Restaurant) -> Unit,
+    data: List<Pair<RestaurantUIState, Double>>,
+    onRestaurantSelected: (RestaurantUIState) -> Unit,
     listState: LazyListState = rememberLazyListState(),
     viewModel: RestaurantViewModel,
     showDistance: Boolean = false
@@ -100,7 +101,7 @@ fun RestaurantsList(
 
 @Composable
 fun RestaurantCard(
-    restaurant: Restaurant,
+    restaurant: RestaurantUIState,
     onClick: () -> Unit,
     viewModel: RestaurantViewModel,
     onAddClick: () -> Unit,

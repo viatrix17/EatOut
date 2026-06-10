@@ -3,8 +3,8 @@ package com.example.eatout.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.eatout.data.Note
-import com.example.eatout.data.NoteRepository
+import com.example.eatout.data.model.Note
+import com.example.eatout.data.repository.NoteRepository
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

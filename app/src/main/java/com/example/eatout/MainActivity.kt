@@ -39,7 +39,7 @@ import com.example.eatout.ui.components.CustomTopBar
 import com.example.eatout.ui.theme.EatOutTheme
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.eatout.data.Note
+import com.example.eatout.data.model.Note
 import com.example.eatout.viewmodel.NoteViewModel
 import com.example.eatout.ui.components.AppLeftDrawer
 import com.example.eatout.ui.components.AppRightDrawer
@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.eatout.data.repository.LocationRepository
+import com.example.eatout.data.repository.NoteRepository
 import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.network.RetrofitInstance
 import com.example.eatout.util.MainViewModelFactory
@@ -76,7 +77,9 @@ class MainActivity : ComponentActivity() {
         LocationRepository(fusedLocationClient)
     }
 
-    private val restaurantRepository by lazy { RestaurantRepository(RetrofitInstance.apiService) } // Add actual params
+    private val restaurantRepository by lazy { RestaurantRepository(RetrofitInstance.apiService) }
+    private val noteRepository by lazy { NoteRepository() }
+
     private val preferencesManager by lazy { PreferencesManager(this) }
     private val viewModel: MainViewModel by viewModels {
         MainViewModelFactory(
@@ -191,6 +194,7 @@ class MainActivity : ComponentActivity() {
                                             navController = navController,
                                             repository = restaurantRepository,
                                             locationRepository = locationRepository,
+                                            noteRepository = noteRepository,
                                             isLoading = isLoading,
                                             isTablet = isTablet,
                                             modifier = Modifier.padding(innerPadding)

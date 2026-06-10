@@ -11,3 +11,16 @@ data class Restaurant(
     var lan: Double = 0.0,
     var lon: Double = 0.0
 )
+
+data class RestaurantUIState(
+    val id: Long,
+    val name: String,
+    val address: String,
+    val cuisineType: String,
+    val tags: List<String>,
+    var lan: Double = 0.0,
+    var lon: Double = 0.0,
+    // Stany z Firebase
+    val isToVisit: Boolean,
+    val isFavorite: Boolean
+)

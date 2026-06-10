@@ -38,7 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.eatout.data.Note
+import com.example.eatout.data.model.Note
 import com.example.eatout.ui.components.DishesList
 import com.example.eatout.ui.components.FilterBottomSheet
 import com.example.eatout.ui.components.FilterButton

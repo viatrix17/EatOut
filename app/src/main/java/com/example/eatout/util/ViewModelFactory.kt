@@ -2,6 +2,7 @@ package com.example.eatout.util
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.eatout.data.repository.NoteRepository
 import com.example.eatout.data.repository.LocationRepository
 import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.viewmodel.MainViewModel
@@ -19,12 +20,13 @@ class MainViewModelFactory(
 
 class RestaurantViewModelFactory(
     private val repository: RestaurantRepository,
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val noteRepository: NoteRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RestaurantViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return RestaurantViewModel(repository, locationRepository) as T
+            return RestaurantViewModel(repository, locationRepository, noteRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

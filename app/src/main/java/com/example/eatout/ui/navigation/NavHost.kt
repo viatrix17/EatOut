@@ -13,6 +13,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.eatout.data.repository.NoteRepository
 import com.example.eatout.data.repository.LocationRepository
 import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.viewmodel.NoteViewModel
@@ -34,6 +35,7 @@ fun AppNavHost(
     navController: NavHostController,
     repository: RestaurantRepository,
     locationRepository: LocationRepository,
+    noteRepository: NoteRepository,
     isLoading: Boolean,
     isTablet: Boolean,
     modifier: Modifier = Modifier
@@ -41,7 +43,7 @@ fun AppNavHost(
     val viewModel: MainViewModel = viewModel()
     val noteViewModel: NoteViewModel = viewModel()
 
-    val factory = RestaurantViewModelFactory(repository, locationRepository)
+    val factory = RestaurantViewModelFactory(repository, locationRepository, noteRepository)
     val restaurantViewModel: RestaurantViewModel = viewModel(factory = factory)
 
     val dishViewModel: DishViewModel = viewModel()

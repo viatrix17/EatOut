@@ -52,14 +52,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import com.example.eatout.data.Note
+import com.example.eatout.data.model.Note
 import com.example.eatout.data.repository.LocationRepository
 import com.example.eatout.data.repository.RestaurantRepository
+import com.example.eatout.domain.model.RestaurantUIState
 import com.example.eatout.ui.components.FilterBottomSheet
 import com.example.eatout.util.LocalRepository
 import com.example.eatout.util.RestaurantViewModelFactory
 import com.example.eatout.viewmodel.ListType
 import com.example.eatout.viewmodel.MainViewModel
+import com.example.eatout.viewmodel.NoteViewModel
 import com.example.eatout.viewmodel.SortOption
 import com.example.eatout.viewmodel.SortOrder
 
@@ -121,6 +123,12 @@ fun RestaurantListScreen(
         viewModel.setListType(targetType)
     }
 
+    val noteViewModel: NoteViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        noteViewModel.startSync("favourites")
+    }
+
 
     val listState = rememberLazyListState()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -157,7 +165,7 @@ fun RestaurantListScreen(
 fun RestaurantListScreenPhoneLayout(
     navController: NavHostController,
     listState: LazyListState = rememberLazyListState(),
-    data: List<Pair<Restaurant, Double>>,
+    data: List<Pair<RestaurantUIState, Double>>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     keyboardController: SoftwareKeyboardController?,
