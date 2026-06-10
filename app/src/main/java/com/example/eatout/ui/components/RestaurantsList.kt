@@ -41,6 +41,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -61,7 +62,8 @@ fun RestaurantsList(
     onRestaurantSelected: (RestaurantUIState) -> Unit,
     listState: LazyListState = rememberLazyListState(),
     viewModel: RestaurantViewModel,
-    showDistance: Boolean = false
+    showDistance: Boolean = false,
+    isToVisitScreen: Boolean
 ){
     var showAlreadyAddedDialog by remember { mutableStateOf(false) }
 
@@ -85,15 +87,19 @@ fun RestaurantsList(
                 restaurant = restaurant,
                 onClick = { onRestaurantSelected(restaurant) },
                 onAddClick = {
-                    if (restaurant.isToVisit) {
+                    if (restaurant.isToVisit && !isToVisitScreen) {
                         showAlreadyAddedDialog = true
-                    } else {
-                        viewModel.toggleToVisit(restaurant)
+                    } else if (!isToVisitScreen){
+                        viewModel.addToVisit(restaurant)
+                    }
+                    else {
+                        viewModel.removeFromToVisit(restaurant)
                     }
                 },
                 onFavoriteAddClick = { viewModel.toggleFavourite(restaurant) },
                 distance = distance,
-                showDistance = showDistance
+                showDistance = showDistance,
+                isToVisitScreen = isToVisitScreen
             )
         }
     }
@@ -106,7 +112,8 @@ fun RestaurantCard(
     onFavoriteAddClick: () -> Unit,
     onAddClick: () -> Unit,
     distance: Double,
-    showDistance: Boolean
+    showDistance: Boolean,
+    isToVisitScreen: Boolean
 ) {
     Card(
         onClick = onClick,
@@ -175,7 +182,7 @@ fun RestaurantCard(
                 Row(horizontalArrangement = Arrangement.End) {
                     IconButton(onClick = onAddClick) { // to visit
                         Icon(
-                            imageVector = Icons.Default.Add,
+                            imageVector = if (!isToVisitScreen) Icons.Default.Add else Icons.Default.Remove,
                             contentDescription = "Ulubione",
                             modifier = Modifier.size(24.dp),
                             tint = if (!restaurant.isToVisit) MaterialTheme.colorScheme.primary

@@ -101,7 +101,7 @@ fun DetailsScreen(
                 if (restaurant.isToVisit) {
                     showAlreadyAddedRestaurantDialog = true
                 } else {
-                    restaurantViewModel.toggleToVisit(restaurant)
+                    restaurantViewModel.addToVisit(restaurant)
                 }
             },
             onAddDishClick = { dish ->

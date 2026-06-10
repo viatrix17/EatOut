@@ -73,7 +73,8 @@ fun RestaurantListScreen(
     isTablet: Boolean,
     navController: NavHostController,
     listType: String = "ALL",
-    showDistance: Boolean = false
+    showDistance: Boolean = false,
+    isToVisitScreen: Boolean = false,
 ) {
     val context = LocalContext.current
 
@@ -156,7 +157,8 @@ fun RestaurantListScreen(
         currentSort = currentSort,
         sortOrder = sortOrder,
         onSortOrderToggled = { viewModel.toggleSortOrder() },
-        viewModel = viewModel
+        viewModel = viewModel,
+        isToVisitScreen = isToVisitScreen
     )
 }
 
@@ -178,7 +180,8 @@ fun RestaurantListScreenPhoneLayout(
     onOptionToggled: (String) -> Unit,
     currentSort: SortOption,
     sortOrder: SortOrder,
-    onSortOrderToggled: () -> Unit
+    onSortOrderToggled: () -> Unit,
+    isToVisitScreen: Boolean
 ) {
     Column {
         Row(
@@ -215,7 +218,8 @@ fun RestaurantListScreenPhoneLayout(
                 onRestaurantSelected = { restaurant -> navController.navigate("details/${restaurant.id}") },
                 listState = listState,
                 viewModel = viewModel,
-                showDistance = showDistance
+                showDistance = showDistance,
+                isToVisitScreen = isToVisitScreen
             )
             SimpleVerticalScrollbar(
                 modifier = Modifier

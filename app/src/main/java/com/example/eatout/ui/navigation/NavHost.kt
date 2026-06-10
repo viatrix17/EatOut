@@ -115,7 +115,8 @@ fun AppNavHost(
                         navController = navController,
                         listType = "TO_VISIT",
                         viewModel = restaurantViewModel,
-                        locationRepository = locationRepository
+                        locationRepository = locationRepository,
+                        isToVisitScreen = true
                     )
                 }
 

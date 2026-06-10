@@ -66,14 +66,15 @@ class NoteRepository {
             onDataChanged(notes)
         }
     }
+    suspend fun addNote(collection: String, note: Note) {
+        db.collection(collection).document().set(note).await()
+    }
+
     suspend fun removeNote(collection: String, restaurantName: String) {
-        // Znajdujemy dokumenty, które mają nazwę restauracji równą podanej
         val snapshot = db.collection(collection)
             .whereEqualTo("restauracja", restaurantName)
             .get()
             .await()
-
-        // Usuwamy znalezione dokumenty
         for (document in snapshot.documents) {
             document.reference.delete().await()
         }

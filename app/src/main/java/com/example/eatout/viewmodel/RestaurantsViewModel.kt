@@ -256,7 +256,7 @@ class RestaurantViewModel(
         }
     }
 
-    fun toggleToVisit(rest: RestaurantUIState) {
+    fun addToVisit(rest: RestaurantUIState) {
         val note = Note(
             restauracja = rest.name,
             lokalizacja = rest.address,
@@ -264,37 +264,16 @@ class RestaurantViewModel(
             lan = rest.lan,
             lon = rest.lon
         )
-
         viewModelScope.launch {
-            noteRepository.toggleNote("rest_to_visit", rest.name, note)
+            noteRepository.addNote("rest_to_visit", note)
         }
     }
 
-//
-//    fun addToFavourite(rest : Restaurant, noteViewModel: NoteViewModel){
-//        var note : Note = Note()
-//        note.restauracja = rest.name;
-//        note.lokalizacja = rest.address
-//        note.tagi = rest.tags
-//        note.lon=rest.lon
-//        note.lan=rest.lon
-//        Log.d("TAG", "added something")
-//        noteViewModel.run {
-//            addNote(note, "favourites")
-//        }
-//    }
-//
-//    fun addToVisit(rest : Restaurant, noteViewModel: NoteViewModel){
-//        var note : Note = Note()
-//        note.restauracja = rest.name;
-//        note.lokalizacja = rest.address
-//        note.tagi = rest.tags
-//        note.lon=rest.lon
-//        note.lan=rest.lon
-//        Log.d("TAG", "added to visit")
-//        noteViewModel.run {
-//            addNote(note, "rest_to_visit")
-//        }
-//    }
+    fun removeFromToVisit(rest: RestaurantUIState) {
+        viewModelScope.launch {
+            noteRepository.removeNote("rest_to_visit", rest.name)
+        }
+    }
+
 
 }
