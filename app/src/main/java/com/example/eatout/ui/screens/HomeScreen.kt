@@ -1,17 +1,21 @@
 package com.example.eatout.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -36,6 +40,7 @@ fun HomeScreen(
     )
 }
 
+
 @Composable
 fun HomePhoneLayout(
     onClosestClick: () -> Unit,
@@ -45,95 +50,42 @@ fun HomePhoneLayout(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp) // Odstępy między kartami
     ) {
-        Card(
-            onClick = onBrowseClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-//            Image(
-//                painter = painterResource(id = R.drawable.Browse),
-//                contentDescription = "Opis obrazka dla dostępności",
-//                modifier = Modifier.fillMaxWidth().height(150.dp),
-//                contentScale = ContentScale.Crop // Przycina obraz, aby wypełnił przestrzeń
-//            )
-            Text(
-                text = "Browse",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
-
-        }
-        Card(
-            onClick = onClosestClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-            //Image(
-//                painter = painterResource(id = R.drawable.Browse),
-//                contentDescription = "Opis obrazka dla dostępności",
-//                modifier = Modifier.fillMaxWidth().height(150.dp),
-//                contentScale = ContentScale.Crop // Przycina obraz, aby wypełnił przestrzeń
-//            )
-            Text(
-                text = "Closest to You",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
-
-        }
-        Card(
-            onClick = onRecommendationsClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-
-          //  Image(
-//                painter = painterResource(id = R.drawable.Browse),
-//                contentDescription = "Opis obrazka dla dostępności",
-//                modifier = Modifier.fillMaxWidth().height(150.dp),
-//                contentScale = ContentScale.Crop // Przycina obraz, aby wypełnił przestrzeń
-//            )
-            Text(
-                text = "Daily Recommendation",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
-
-        }
+        // Każda karta otrzymuje weight(1f), dzięki czemu dzielą ekran po równo
+        BigMenuCard(text = "Browse", icon = R.drawable.outline_food_bank_24, modifier = Modifier.weight(1f), onClick = onBrowseClick)
+        BigMenuCard(text = "Closest to You", icon = R.drawable.outline_map_24, modifier = Modifier.weight(1f), onClick = onClosestClick)
+        BigMenuCard(text = "Daily Recommendation", icon = R.drawable.outline_featured_seasonal_and_gifts_24, modifier = Modifier.weight(1f), onClick = onRecommendationsClick)
     }
-
 }
 
-// landscape phone layout == tablet layout ig
+@Composable
+fun BigMenuCard(text: String, icon: Int, modifier: Modifier, onClick: () -> Unit) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        onClick = onClick
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(80.dp), // Duża ikona
+                contentScale = ContentScale.Fit
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = text,
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
+    }
+}
