@@ -89,7 +89,9 @@ class MainViewModel(
 
     fun changeToDarkMode() {
         viewModelScope.launch {
+            preferencesManager.saveUseSystemTheme(false)
             preferencesManager.saveDarkMode(true)
+            _isSystemTheme.value = false
             _isDarkThemeCustom.value = true
         }
     }
@@ -98,13 +100,16 @@ class MainViewModel(
         viewModelScope.launch {
             preferencesManager.saveUseSystemTheme(false)
             preferencesManager.saveDarkMode(false)
+            _isSystemTheme.value = false
             _isDarkThemeCustom.value = false
+
         }
     }
 
     fun enableSystemMode(){
         viewModelScope.launch {
             preferencesManager.saveUseSystemTheme(true)
+            _isSystemTheme.value = true
         }
     }
 
