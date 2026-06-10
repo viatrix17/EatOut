@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.eatout.data.repository.NoteRepository
 import com.example.eatout.data.repository.LocationRepository
@@ -24,11 +25,14 @@ import com.example.eatout.ui.screens.LocationSettingsScreen
 import com.example.eatout.ui.screens.ModeSettingsScreen
 import com.example.eatout.ui.screens.RecommendationScreen
 import com.example.eatout.ui.screens.RestaurantListScreen
+import com.example.eatout.ui.screens.WelcomeScreen
 import com.example.eatout.util.LocalRepository
 import com.example.eatout.util.RestaurantViewModelFactory
 import com.example.eatout.viewmodel.DishViewModel
 import com.example.eatout.viewmodel.MainViewModel
 import com.example.eatout.viewmodel.RestaurantViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun AppNavHost(
@@ -38,10 +42,14 @@ fun AppNavHost(
     noteRepository: NoteRepository,
     isLoading: Boolean,
     isTablet: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isDarkTheme: Boolean
 ) {
     val viewModel: MainViewModel = viewModel()
     val noteViewModel: NoteViewModel = viewModel()
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     val factory = RestaurantViewModelFactory(repository, locationRepository, noteRepository)
     val restaurantViewModel: RestaurantViewModel = viewModel(factory = factory)
@@ -52,19 +60,19 @@ fun AppNavHost(
         CompositionLocalProvider(LocalRepository provides repository) {
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "welcome",
                 modifier = modifier
             ) {
-//        composable("welcome") {
-//            WelcomeScreen(
-//                onNavigateToHome = {
-//                    navController.navigate("home") {
-//                        popUpTo("welcome") { inclusive = true }
-//                    }
-//                },
-//                isDarkTheme = isDarkTheme
-//            )
-//        }
+            composable("welcome") {
+                WelcomeScreen(
+                    onNavigateToHome = {
+                        navController.navigate("home") {
+                            popUpTo("welcome") { inclusive = true }
+                        }
+                    },
+                    isDarkTheme = isDarkTheme
+                )
+            }
                 composable("home") {
                     HomeScreen(
                         isTablet = isTablet,
@@ -158,7 +166,7 @@ fun AppNavHost(
 
             }
         }
-        if (isLoading) {
+        if (isLoading && currentRoute != "welcome") {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }

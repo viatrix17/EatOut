@@ -164,30 +164,35 @@ class MainActivity : ComponentActivity() {
                                         modifier = Modifier.fillMaxSize(),
                                         topBar = {
                                             val isHome = currentDestination?.route == "home"
+                                            val isWelcome = currentDestination?.route == "welcome"
                                             val isNotReady = currentDestination == null
-                                            CustomTopBar(
-                                                title = topBarTitle,
-                                                onMenuClick = {
-                                                    scope.launch {
-                                                        leftDrawerState.open()
-                                                    }
-                                                },
-                                                onNotifClick = {
-                                                    scope.launch {
-                                                        rightDrawerState.open()
-                                                    }
-                                                },
-                                                onBackClick = {
-                                                    navController.popBackStack()
-                                                },
-                                                showBackButton = !isHome && !isNotReady,
-                                                modifier = Modifier
-                                            )
+                                            if (!isWelcome) {
+                                                CustomTopBar(
+                                                    title = topBarTitle,
+                                                    onMenuClick = {
+                                                        scope.launch {
+                                                            leftDrawerState.open()
+                                                        }
+                                                    },
+                                                    onNotifClick = {
+                                                        scope.launch {
+                                                            rightDrawerState.open()
+                                                        }
+                                                    },
+                                                    onBackClick = {
+                                                        navController.popBackStack()
+                                                    },
+                                                    showBackButton = !isHome && !isNotReady,
+                                                    modifier = Modifier
+                                                )
+                                            }
                                         },
                                         bottomBar = {
-                                            CustomBottomBar(
-                                                navController = navController
-                                            )
+                                            if (currentDestination?.route != "welcome"){
+                                                CustomBottomBar(
+                                                    navController = navController
+                                                )
+                                            }
                                         }
                                     ) { innerPadding ->
                                         AppNavHost(
@@ -197,7 +202,8 @@ class MainActivity : ComponentActivity() {
                                             noteRepository = noteRepository,
                                             isLoading = isLoading,
                                             isTablet = isTablet,
-                                            modifier = Modifier.padding(innerPadding)
+                                            modifier = Modifier.padding(innerPadding),
+                                            isDarkTheme = useDarkTheme
                                         )
                                     }
                                 }
