@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -156,7 +157,7 @@ fun DishCard(
 
             IconButton(onClick = onAddClick) {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = if(dish.isToTry) Icons.Default.Remove else Icons.Default.Add,
                     contentDescription = "Ulubione",
                     modifier = Modifier.size(24.dp),
                     tint = if (!dish.isToTry) MaterialTheme.colorScheme.primary

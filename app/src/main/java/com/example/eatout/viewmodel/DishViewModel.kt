@@ -67,15 +67,15 @@ class DishViewModel : ViewModel() {
         // 7: La Rambla
         Dish(19, 7, "Patatas Bravas", 18.0, "ziemniaki, sos pikantny, aioli", listOf("hiszpańskie", "tapas"), true, false),
         Dish(20, 7, "Paella Seafood", 55.0, "ryż szafranowy, owoce morza", listOf("hiszpańskie", "klasyczne"), false, false),
-        Dish(21, 7, "Chorizo al Vino", 32.0, "kiełbaska chorizo w winie", listOf("hiszpańskie", "mięsne"), false, false),
+        Dish(21, 7, "Chorizo al Vino", 32.0, "kiełbaska chorizo w winie", listOf("hiszpańskie", "mięsne"), false, true),
 
         // 8: Pierogarnia u Mamy
         Dish(22, 8, "Pierogi z jagodami", 25.0, "ciasto, owoce, śmietana", listOf("polskie", "domowe"), false, false),
         Dish(23, 8, "Pierogi z mięsem", 26.0, "ciasto, wieprzowina, okrasa", listOf("polskie", "domowe"), false, false),
-        Dish(24, 8, "Naleśniki z twarogiem", 22.0, "ciasto, twaróg, cukier puder", listOf("polskie", "śniadaniowe"), false, false),
+        Dish(24, 8, "Naleśniki z twarogiem", 22.0, "ciasto, twaróg, cukier puder", listOf("polskie", "śniadaniowe"), false, true),
 
         // 9: Vegan Ramen Shop
-        Dish(25, 9, "Vegan Shio Ramen", 39.0, "bulion warzywny, makaron, nori", listOf("azjatyckie", "wegańskie"), true, false),
+        Dish(25, 9, "Vegan Shio Ramen", 39.0, "bulion warzywny, makaron, nori", listOf("azjatyckie", "wegańskie"), true, true),
         Dish(26, 9, "Edamame", 14.0, "młoda soja, sól morska", listOf("azjatyckie", "przystawka"), false, false),
         Dish(27, 9, "Spicy Miso Ramen", 42.0, "pikantny bulion, tofu, kukurydza", listOf("azjatyckie", "ostre"), false, false),
 
@@ -87,7 +87,7 @@ class DishViewModel : ViewModel() {
         // 11: Greckie Smaki
         Dish(31, 11, "Sałatka Grecka", 24.0, "feta, oliwki, pomidor, ogórek", listOf("greckie", "wegetariańskie"), true, false),
         Dish(32, 11, "Souvlaki", 32.0, "szaszłyk drobiowy, tzatziki, pita", listOf("greckie", "mięsne"), false, false),
-        Dish(33, 11, "Moussaka", 36.0, "bakłażan, mięso mielone, sos beszamel", listOf("greckie", "klasyczne"), false, false),
+        Dish(33, 11, "Moussaka", 36.0, "bakłażan, mięso mielone, sos beszamel", listOf("greckie", "klasyczne"), false, true),
 
         // 12: Francuska Bagietka
         Dish(34, 12, "Croissant Masło", 10.0, "tradycyjny rogal francuski", listOf("francuskie", "kawiarnia"), false, false),
@@ -120,18 +120,33 @@ class DishViewModel : ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
-    private val _showOnlyFavorites = MutableStateFlow(false)
+    private val _showOnlyFavorites = MutableStateFlow(true)
     val showOnlyFavorites = _showOnlyFavorites.asStateFlow()
 
-    fun toggleShowOnlyFavorites() {
-        _showOnlyFavorites.update { !it }
+    private val _showOnlyToTry = MutableStateFlow(true)
+    val showOnlyToTry = _showOnlyToTry.asStateFlow()
+
+    enum class MarkedFilter {
+        ALL_MARKED, // Ulubione + Do Spróbowania
+        ONLY_FAVORITES // Tylko Ulubione
+    }
+
+    // W DishViewModel:
+    private val _markedFilter = MutableStateFlow(MarkedFilter.ALL_MARKED)
+    val markedFilter = _markedFilter.asStateFlow()
+
+    fun toggleMarkedFilter() {
+        _markedFilter.update { current ->
+            if (current == MarkedFilter.ALL_MARKED) MarkedFilter.ONLY_FAVORITES
+            else MarkedFilter.ALL_MARKED
+        }
     }
     val filteredDishes: StateFlow<List<Dish>> = combine(
         _listType,
         _searchQuery,
-        _showOnlyFavorites,
+        _markedFilter,
         allDishes
-    ) { type, query, showOnlyFavs, allDishesList ->
+    ) { type, query, filterMode, allDishesList ->
 
         var list = when (type) {
             DishesListType.ALL -> allDishesList
@@ -139,8 +154,11 @@ class DishViewModel : ViewModel() {
             DishesListType.FAVORITES -> allDishesList.filter { it.isFavorite }
         }
 
-        if (showOnlyFavs) {
-            list = list.filter { it.isFavorite }
+        if (type == DishesListType.ALL) {
+            list = when (filterMode) {
+                MarkedFilter.ALL_MARKED -> list.filter { it.isFavorite || it.isToTry }
+                MarkedFilter.ONLY_FAVORITES -> list.filter { it.isFavorite }
+            }
         }
 
         if (query.isNotBlank()) {
@@ -151,9 +169,8 @@ class DishViewModel : ViewModel() {
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList() // Użycie emptyList() jest bezpieczniejsze na start
+        initialValue = emptyList()
     )
-
     fun setListType(type: DishesListType) {
         _listType.value = type
     }

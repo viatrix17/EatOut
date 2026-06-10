@@ -101,7 +101,7 @@ fun DishesScreen(
         currentSort = currentSort,
         sortOrder = sortOrder,
         onSortOrderToggled = { viewModel.toggleSortOrder() },
-        onFavsToggle = { viewModel.toggleShowOnlyFavorites() }
+        onFavsToggle = { viewModel.toggleMarkedFilter() }
 
     )
 }

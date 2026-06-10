@@ -44,6 +44,8 @@ import com.example.eatout.ui.components.DishesList
 import com.example.eatout.ui.components.TagLabel
 import com.example.eatout.domain.model.Dish
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import com.example.eatout.data.repository.RestaurantRepository
@@ -79,7 +81,7 @@ fun DetailsScreen(
         )
     }
 
-    val dishes = dishViewModel.selectAll()
+
 
     var selectedDish by remember { mutableStateOf<Dish?>(null) }
 
@@ -95,9 +97,12 @@ fun DetailsScreen(
 
     val currentRestaurant = restaurantViewModel.getRestaurantById(restaurantId)
 
-    if (currentRestaurant != null) {
-        val dishes = dishViewModel.getDishesForRestaurant(restaurantId)
+    val dishes by dishViewModel.filteredDishes.collectAsState()
+    LaunchedEffect(Unit) {
+        dishViewModel.selectAll()
+    }
 
+    if (currentRestaurant != null) {
         DetailsPhoneLayout(
             restaurantViewModel = restaurantViewModel,
             dishViewModel = dishViewModel,
