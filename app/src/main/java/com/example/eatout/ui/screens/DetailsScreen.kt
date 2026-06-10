@@ -44,6 +44,7 @@ import com.example.eatout.ui.components.TagLabel
 import com.example.eatout.domain.model.Dish
 import androidx.compose.foundation.lazy.items
 import com.example.eatout.data.repository.RestaurantRepository
+import com.example.eatout.domain.model.RestaurantUIState
 import com.example.eatout.util.LocalRepository
 import com.example.eatout.util.RestaurantViewModelFactory
 
@@ -100,7 +101,7 @@ fun DetailsScreen(
                 if (restaurant.isToVisit) {
                     showAlreadyAddedRestaurantDialog = true
                 } else {
-                    restaurantViewModel.toggleToVisit(restaurant.id)
+                    restaurantViewModel.toggleToVisit(restaurant)
                 }
             },
             onAddDishClick = { dish ->
@@ -126,9 +127,9 @@ fun DetailsScreen(
 fun DetailsPhoneLayout(
     restaurantViewModel: RestaurantViewModel,
     dishViewModel: DishViewModel,
-    restaurant: Restaurant,
+    restaurant: RestaurantUIState,
     dishes: List<Dish>,
-    onAddRestaurantClick: (Restaurant) -> Unit,
+    onAddRestaurantClick: (RestaurantUIState) -> Unit,
     onAddDishClick: (Dish) -> Unit,
     listState: LazyListState = rememberLazyListState(),
     onClick: (Dish) -> Unit
@@ -202,7 +203,7 @@ fun DetailsPhoneLayout(
                                 )
                             }
 
-                            IconButton(onClick = { restaurantViewModel.toggleFavourite(restaurant.id) }) {
+                            IconButton(onClick = { restaurantViewModel.toggleFavourite(restaurant) }) {
                                 Icon(
                                     imageVector = Icons.Default.Star,
                                     contentDescription = "Ulubione",

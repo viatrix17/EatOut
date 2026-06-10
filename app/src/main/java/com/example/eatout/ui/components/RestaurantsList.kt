@@ -84,14 +84,14 @@ fun RestaurantsList(
             RestaurantCard(
                 restaurant = restaurant,
                 onClick = { onRestaurantSelected(restaurant) },
-                viewModel = viewModel,
                 onAddClick = {
                     if (restaurant.isToVisit) {
                         showAlreadyAddedDialog = true
                     } else {
-                        viewModel.toggleToVisit(restaurant.id)
+                        viewModel.toggleToVisit(restaurant)
                     }
                 },
+                onFavoriteAddClick = { viewModel.toggleFavourite(restaurant) },
                 distance = distance,
                 showDistance = showDistance
             )
@@ -103,7 +103,7 @@ fun RestaurantsList(
 fun RestaurantCard(
     restaurant: RestaurantUIState,
     onClick: () -> Unit,
-    viewModel: RestaurantViewModel,
+    onFavoriteAddClick: () -> Unit,
     onAddClick: () -> Unit,
     distance: Double,
     showDistance: Boolean
@@ -173,7 +173,7 @@ fun RestaurantCard(
                     )
                 }
                 Row(horizontalArrangement = Arrangement.End) {
-                    IconButton(onClick = onAddClick) {
+                    IconButton(onClick = onAddClick) { // to visit
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "Ulubione",
@@ -183,7 +183,7 @@ fun RestaurantCard(
                         )
                     }
 
-                    IconButton(onClick = { viewModel.toggleFavourite(restaurant.id) }) {
+                    IconButton(onClick = onFavoriteAddClick ) {
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = "Ulubione",

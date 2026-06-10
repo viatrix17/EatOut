@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 enum class ListType { ALL, TO_VISIT, FAVORITES }
 
@@ -223,44 +224,77 @@ class RestaurantViewModel(
         _selectedTags.value = emptyList()
     }
 
-    fun getRestaurantById(id: Long): Restaurant? {
-        return allRestaurants.value.find { it.id == id }
+    fun getRestaurantById(id: Long): RestaurantUIState? {
+        val restaurant = allRestaurants.value.find { it.id == id } ?: return null
+
+        val isFav = favoriteNotes.value.any { it.restauracja == restaurant.name }
+        val isToVisit = toVisitNotes.value.any { it.restauracja == restaurant.name }
+
+        return RestaurantUIState(
+            id = restaurant.id,
+            name = restaurant.name,
+            address = restaurant.address,
+            cuisineType = restaurant.cuisineType,
+            tags = restaurant.tags,
+            lan = restaurant.lan,
+            lon = restaurant.lon,
+            isFavorite = isFav,
+            isToVisit = isToVisit
+        )
     }
 
-
-    fun toggleFavourite(id: Long){
-        // TO DO DODAĆ ŻEBY ZMIENIAŁO FAVOURITE - wywoływanie funkcji z modelu (klasy)
-    }
-
-    fun toggleToVisit(id: Long){
-        // TO DO DODAĆ ŻEBY ZMIENIAŁO FAVOURITE - wywoływanie funkcji z modelu (klasy)
-    }
-
-
-    fun addToFavourite(rest : Restaurant, noteViewModel: NoteViewModel){
-        var note : Note = Note()
-        note.restauracja = rest.name;
-        note.lokalizacja = rest.address
-        note.tagi = rest.tags
-        note.lon=rest.lon
-        note.lan=rest.lon
-        Log.d("TAG", "added something")
-        noteViewModel.run {
-            addNote(note, "favourites")
+    fun toggleFavourite(rest: RestaurantUIState) {
+        val note = Note(
+            restauracja = rest.name,
+            lokalizacja = rest.address,
+            tagi = rest.tags,
+            lan = rest.lan,
+            lon = rest.lon
+        )
+        viewModelScope.launch {
+            noteRepository.toggleNote("favourites", rest.name, note)
         }
     }
 
-    fun addToVisit(rest : Restaurant, noteViewModel: NoteViewModel){
-        var note : Note = Note()
-        note.restauracja = rest.name;
-        note.lokalizacja = rest.address
-        note.tagi = rest.tags
-        note.lon=rest.lon
-        note.lan=rest.lon
-        Log.d("TAG", "added to visit")
-        noteViewModel.run {
-            addNote(note, "rest_to_visit")
+    fun toggleToVisit(rest: RestaurantUIState) {
+        val note = Note(
+            restauracja = rest.name,
+            lokalizacja = rest.address,
+            tagi = rest.tags,
+            lan = rest.lan,
+            lon = rest.lon
+        )
+
+        viewModelScope.launch {
+            noteRepository.toggleNote("rest_to_visit", rest.name, note)
         }
     }
+
+//
+//    fun addToFavourite(rest : Restaurant, noteViewModel: NoteViewModel){
+//        var note : Note = Note()
+//        note.restauracja = rest.name;
+//        note.lokalizacja = rest.address
+//        note.tagi = rest.tags
+//        note.lon=rest.lon
+//        note.lan=rest.lon
+//        Log.d("TAG", "added something")
+//        noteViewModel.run {
+//            addNote(note, "favourites")
+//        }
+//    }
+//
+//    fun addToVisit(rest : Restaurant, noteViewModel: NoteViewModel){
+//        var note : Note = Note()
+//        note.restauracja = rest.name;
+//        note.lokalizacja = rest.address
+//        note.tagi = rest.tags
+//        note.lon=rest.lon
+//        note.lan=rest.lon
+//        Log.d("TAG", "added to visit")
+//        noteViewModel.run {
+//            addNote(note, "rest_to_visit")
+//        }
+//    }
 
 }

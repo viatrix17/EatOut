@@ -78,4 +78,20 @@ class NoteRepository {
             document.reference.delete().await()
         }
     }
+
+    suspend fun toggleNote(collection: String, restaurantName: String, note: Note) {
+        val snapshot = db.collection(collection)
+            .whereEqualTo("restauracja", restaurantName)
+            .get()
+            .await()
+
+        if (snapshot.isEmpty) {
+            db.collection(collection).document().set(note).await()
+        } else {
+            // Jeśli jest na liście – usuwamy
+            for (document in snapshot.documents) {
+                document.reference.delete().await()
+            }
+        }
+    }
 }
