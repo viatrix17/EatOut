@@ -11,13 +11,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -98,6 +101,7 @@ fun DishesScreen(
         currentSort = currentSort,
         sortOrder = sortOrder,
         onSortOrderToggled = { viewModel.toggleSortOrder() },
+        onFavsToggle = { viewModel.toggleShowOnlyFavorites() }
 
     )
 }
@@ -117,7 +121,8 @@ fun DishesPhoneLayout(
     onOptionToggled: (String) -> Unit,
     currentSort: SortOption,
     sortOrder: SortOrder,
-    onSortOrderToggled: () -> Unit
+    onSortOrderToggled: () -> Unit,
+    onFavsToggle: () -> Unit
 ) {
     Column {
         Row(
@@ -132,7 +137,6 @@ fun DishesPhoneLayout(
                 onValueChange = { onSearchQueryChange(it) },
                 label = { Text("Browse dishes") },
                 modifier = Modifier
-                    .fillMaxWidth()
                     .weight(1f)
                     .padding(16.dp),
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
@@ -147,6 +151,14 @@ fun DishesPhoneLayout(
                 text = "Filter",
                 onClick = { onFilterStateChange(true) }
             )
+            IconButton(onClick = onFavsToggle) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = "Ulubione",
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
 
         Box(modifier = Modifier.fillMaxSize()) {

@@ -3,6 +3,7 @@ package com.example.eatout.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,6 +44,8 @@ import com.example.eatout.ui.components.DishesList
 import com.example.eatout.ui.components.TagLabel
 import com.example.eatout.domain.model.Dish
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.domain.model.RestaurantUIState
 import com.example.eatout.util.LocalRepository
@@ -52,7 +55,8 @@ import com.example.eatout.util.RestaurantViewModelFactory
 fun DetailsScreen(
     restaurantId: Long,
     restaurantViewModel: RestaurantViewModel,
-    dishViewModel: DishViewModel
+    dishViewModel: DishViewModel,
+    isDarkTheme: Boolean
 ){
     var showAlreadyAddedRestaurantDialog by remember { mutableStateOf(false) }
 
@@ -74,6 +78,8 @@ fun DetailsScreen(
             message = "This dish is already on your To Try List"
         )
     }
+
+    val dishes = dishViewModel.selectAll()
 
     var selectedDish by remember { mutableStateOf<Dish?>(null) }
 
@@ -113,12 +119,12 @@ fun DetailsScreen(
             },
             listState = listState,
             onClick = { dish ->
-                selectedDish = dish }
+                selectedDish = dish },
+            isDarkTheme = isDarkTheme
         )
     } else {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Nie znaleziono restauracji o ID: $restaurantId")
-            Text("Sprawdź, czy lista w ViewModelu nie jest pusta.")
+            Text("Restauration not found: $restaurantId")
         }
     }
 }
@@ -132,7 +138,8 @@ fun DetailsPhoneLayout(
     onAddRestaurantClick: (RestaurantUIState) -> Unit,
     onAddDishClick: (Dish) -> Unit,
     listState: LazyListState = rememberLazyListState(),
-    onClick: (Dish) -> Unit
+    onClick: (Dish) -> Unit,
+    isDarkTheme: Boolean
 ){
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
@@ -142,8 +149,9 @@ fun DetailsPhoneLayout(
                 modifier = Modifier.padding(horizontal = 12.dp),
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_placeholder), // TO DO dodać biały ic_placeholder
+                    painter = painterResource(id = R.drawable.ic_placeholder),
                     contentDescription = "Image",
+                    colorFilter = ColorFilter.tint(if (isDarkTheme) Color.White else Color.Black),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
@@ -180,7 +188,11 @@ fun DetailsPhoneLayout(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             restaurant.tags.forEach { tag ->
                                 TagLabel(text = tag)
                             }

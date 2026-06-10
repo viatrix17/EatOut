@@ -195,7 +195,7 @@ class RestaurantViewModel(
                     restaurant.lan, restaurant.lon
                 )
                 restaurant to dist
-            }
+            }.sortedBy { it.second }
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 

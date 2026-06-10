@@ -137,7 +137,8 @@ fun AppNavHost(
                     DetailsScreen(
                         restaurantId = restaurantId,
                         restaurantViewModel = restaurantViewModel,
-                        dishViewModel = dishViewModel
+                        dishViewModel = dishViewModel,
+                        isDarkTheme = isDarkTheme
                     )
                 }
 

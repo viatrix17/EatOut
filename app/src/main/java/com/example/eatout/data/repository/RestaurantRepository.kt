@@ -29,7 +29,9 @@ class RestaurantRepository(private val apiService: OverpassApiService) {
                 }
 
 
-                val result = response?.elements?.map { dto ->
+                val result = response?.elements
+                    ?.filter { it.apiTags?.name != null }
+                    ?.map { dto ->
                     val name = dto.apiTags?.name ?: "Unknown restaurant"
                     val generatedTags = RestaurantProcessor.returnTags(name)
                     Restaurant(

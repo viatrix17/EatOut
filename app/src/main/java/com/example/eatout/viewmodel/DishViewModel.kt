@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.eatout.domain.model.Dish
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
@@ -15,7 +17,7 @@ enum class DishesListType { ALL, TO_TRY, FAVORITES }
 
 class DishViewModel : ViewModel() {
 
-    private val allDishes = listOf(
+    private val allDishes = MutableStateFlow(listOf(
         // 1: Pizzeria Da Grasso
         Dish(
             1,
@@ -63,7 +65,7 @@ class DishViewModel : ViewModel() {
         Dish(18, 6, "Tom Yum", 28.0, "zupa kwaśno-pikantna, trawa cytrynowa", listOf("azjatyckie", "ostre"), false, false),
 
         // 7: La Rambla
-        Dish(19, 7, "Patatas Bravas", 18.0, "ziemniaki, sos pikantny, aioli", listOf("hiszpańskie", "tapas"), false, false),
+        Dish(19, 7, "Patatas Bravas", 18.0, "ziemniaki, sos pikantny, aioli", listOf("hiszpańskie", "tapas"), true, false),
         Dish(20, 7, "Paella Seafood", 55.0, "ryż szafranowy, owoce morza", listOf("hiszpańskie", "klasyczne"), false, false),
         Dish(21, 7, "Chorizo al Vino", 32.0, "kiełbaska chorizo w winie", listOf("hiszpańskie", "mięsne"), false, false),
 
@@ -73,17 +75,17 @@ class DishViewModel : ViewModel() {
         Dish(24, 8, "Naleśniki z twarogiem", 22.0, "ciasto, twaróg, cukier puder", listOf("polskie", "śniadaniowe"), false, false),
 
         // 9: Vegan Ramen Shop
-        Dish(25, 9, "Vegan Shio Ramen", 39.0, "bulion warzywny, makaron, nori", listOf("azjatyckie", "wegańskie"), false, false),
+        Dish(25, 9, "Vegan Shio Ramen", 39.0, "bulion warzywny, makaron, nori", listOf("azjatyckie", "wegańskie"), true, false),
         Dish(26, 9, "Edamame", 14.0, "młoda soja, sól morska", listOf("azjatyckie", "przystawka"), false, false),
         Dish(27, 9, "Spicy Miso Ramen", 42.0, "pikantny bulion, tofu, kukurydza", listOf("azjatyckie", "ostre"), false, false),
 
         // 10: Kebab u Turka
-        Dish(28, 10, "Kebab w bułce", 22.0, "mięso, surówki, sos mieszany", listOf("street-food", "fast-food"), false, false),
+        Dish(28, 10, "Kebab w bułce", 22.0, "mięso, surówki, sos mieszany", listOf("street-food", "fast-food"), true, false),
         Dish(29, 10, "Kebab box", 24.0, "mięso, frytki, sosy", listOf("street-food", "fast-food"), false, false),
         Dish(30, 10, "Rollo duże", 26.0, "tortilla, mięso, ser, warzywa", listOf("street-food", "mięsne"), false, false),
 
         // 11: Greckie Smaki
-        Dish(31, 11, "Sałatka Grecka", 24.0, "feta, oliwki, pomidor, ogórek", listOf("greckie", "wegetariańskie"), false, false),
+        Dish(31, 11, "Sałatka Grecka", 24.0, "feta, oliwki, pomidor, ogórek", listOf("greckie", "wegetariańskie"), true, false),
         Dish(32, 11, "Souvlaki", 32.0, "szaszłyk drobiowy, tzatziki, pita", listOf("greckie", "mięsne"), false, false),
         Dish(33, 11, "Moussaka", 36.0, "bakłażan, mięso mielone, sos beszamel", listOf("greckie", "klasyczne"), false, false),
 
@@ -94,7 +96,7 @@ class DishViewModel : ViewModel() {
 
         // 13: Indyjskie Curry
         Dish(37, 13, "Butter Chicken", 38.0, "kurczak, kremowy sos pomidorowy", listOf("indyjskie", "mięsne"), false, false),
-        Dish(38, 13, "Naan Czosnkowy", 8.0, "placek pieczony w piecu tandoor", listOf("indyjskie", "dodatki"), false, false),
+        Dish(38, 13, "Naan Czosnkowy", 8.0, "placek pieczony w piecu tandoor", listOf("indyjskie", "dodatki"), true, false),
         Dish(39, 13, "Palak Paneer", 34.0, "szpinak, ser paneer, przyprawy", listOf("indyjskie", "wegetariańskie"), false, false),
 
         // 14: VietStreet
@@ -107,9 +109,9 @@ class DishViewModel : ViewModel() {
         Dish(44, 15, "Grillowane Warzywa", 20.0, "sezonowe warzywa z grilla", listOf("wegetariańskie", "zdrowe"), false, false),
         Dish(45, 15, "Steak Tatar", 45.0, "siekana wołowina, dodatki", listOf("mięsne", "klasyczne"), false, false)
     )
+    )
 
-
-    private val _allDishes = MutableStateFlow<List<Dish>>(emptyList())
+//    private val allDishes = MutableStateFlow<List<Dish>>(emptyList())
     private val _currentDishes = MutableStateFlow<List<Dish>>(emptyList())
     val currentDishes = _currentDishes.asStateFlow()
 
@@ -118,18 +120,38 @@ class DishViewModel : ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
-    val filteredDishes = combine(_listType, _searchQuery) { type, query ->
-        val baseList = when (type) {
-            DishesListType.ALL -> allDishes
-            DishesListType.TO_TRY -> allDishes.filter { it.isToTry }
-            DishesListType.FAVORITES -> allDishes.filter { it.isFavorite }
+    private val _showOnlyFavorites = MutableStateFlow(false)
+    val showOnlyFavorites = _showOnlyFavorites.asStateFlow()
+
+    fun toggleShowOnlyFavorites() {
+        _showOnlyFavorites.update { !it }
+    }
+    val filteredDishes: StateFlow<List<Dish>> = combine(
+        _listType,
+        _searchQuery,
+        _showOnlyFavorites,
+        allDishes
+    ) { type, query, showOnlyFavs, allDishesList ->
+
+        var list = when (type) {
+            DishesListType.ALL -> allDishesList
+            DishesListType.TO_TRY -> allDishesList.filter { it.isToTry }
+            DishesListType.FAVORITES -> allDishesList.filter { it.isFavorite }
         }
-        if (query.isBlank()) baseList
-        else baseList.filter { it.name.contains(query, ignoreCase = true) }
+
+        if (showOnlyFavs) {
+            list = list.filter { it.isFavorite }
+        }
+
+        if (query.isNotBlank()) {
+            list = list.filter { it.name.contains(query, ignoreCase = true) }
+        }
+
+        list
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        initialValue = allDishes
+        initialValue = emptyList() // Użycie emptyList() jest bezpieczniejsze na start
     )
 
     fun setListType(type: DishesListType) {
@@ -141,14 +163,13 @@ class DishViewModel : ViewModel() {
     }
 
     fun selectAll() {
-        _currentDishes.value = allDishes
+        _currentDishes.value = allDishes.value
         _searchQuery.value = ""
     }
 
     fun getDishesForRestaurant(id: Long): List<Dish> {
-        return allDishes.filter { it.restaurantId == id }
+        return allDishes.value.filter { it.restaurantId == id }
     }
-
     fun toggleFavourite(id: Int){
         // TO DO DODAĆ ŻEBY ZMIENIAŁO FAVOURITE - wywoływanie funkcji z modelu (klasy)
     }
@@ -176,9 +197,12 @@ class DishViewModel : ViewModel() {
         _sortOrder.update { if (it == SortOrder.ASC) SortOrder.DESC else SortOrder.ASC }
     }
 
-    val allLabels = MutableStateFlow(
-        allDishes.flatMap { it.labels }.distinct().sorted()
-    ).asStateFlow()
-
+    val allLabels: StateFlow<List<String>> = allDishes.map { dishes ->
+        dishes.flatMap { it.labels }.distinct().sorted()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
 }
