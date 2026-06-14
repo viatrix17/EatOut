@@ -67,6 +67,7 @@ import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.network.RetrofitInstance
 import com.example.eatout.util.MainViewModelFactory
 import com.example.eatout.util.PreferencesManager
+import com.example.eatout.viewmodel.RestaurantViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -93,6 +94,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             val isLocationEnabled by viewModel.isLocationEnabled.collectAsStateWithLifecycle()
             if (isLocationEnabled != null) {

@@ -1,6 +1,7 @@
 package com.example.eatout.ui.components
 
 import android.R.attr.data
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -66,6 +67,7 @@ fun RestaurantsList(
     isToVisitScreen: Boolean
 ){
     var showAlreadyAddedDialog by remember { mutableStateOf(false) }
+
 
     if (showAlreadyAddedDialog) {
         CustomAlertDialog(

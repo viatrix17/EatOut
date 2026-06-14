@@ -15,11 +15,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 enum class ListType { ALL, TO_VISIT, FAVORITES }
 
@@ -223,7 +225,29 @@ class RestaurantViewModel(
 
         _selectedTags.value = emptyList()
     }
+    fun getRecomendedRestaurant(): RestaurantUIState? {
+        var restaurant = allRestaurants.value[Random.nextInt(0,allRestaurants.value.size-1)]
 
+        var isFav = favoriteNotes.value.any { it.restauracja == restaurant.name }
+        var isToVisit = toVisitNotes.value.any { it.restauracja == restaurant.name }
+        while(isFav != false and isToVisit != false && restaurant != null){
+            restaurant = allRestaurants.value[Random.nextInt(0,allRestaurants.value.size-1)]
+            isFav = favoriteNotes.value.any { it.restauracja == restaurant.name }
+            isToVisit = toVisitNotes.value.any { it.restauracja == restaurant.name }
+        }
+
+        return RestaurantUIState(
+            id = restaurant.id,
+            name = restaurant.name,
+            address = restaurant.address,
+            cuisineType = restaurant.cuisineType,
+            tags = restaurant.tags,
+            lan = restaurant.lan,
+            lon = restaurant.lon,
+            isFavorite = isFav,
+            isToVisit = isToVisit
+        )
+    }
     fun getRestaurantById(id: Long): RestaurantUIState? {
         val restaurant = allRestaurants.value.find { it.id == id } ?: return null
 

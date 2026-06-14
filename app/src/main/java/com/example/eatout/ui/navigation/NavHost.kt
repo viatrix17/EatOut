@@ -101,7 +101,8 @@ fun AppNavHost(
                 {
                     RecommendationScreen(
                         isTablet = isTablet,
-                        navController = navController
+                        navController = navController,
+                        viewModel = restaurantViewModel
                     )
                 }
 
