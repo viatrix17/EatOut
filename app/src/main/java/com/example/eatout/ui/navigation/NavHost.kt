@@ -33,6 +33,7 @@ import com.example.eatout.viewmodel.MainViewModel
 import com.example.eatout.viewmodel.RestaurantViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.eatout.util.PreferencesManager
 
 @Composable
 fun AppNavHost(
@@ -43,7 +44,8 @@ fun AppNavHost(
     isLoading: Boolean,
     isTablet: Boolean,
     modifier: Modifier = Modifier,
-    isDarkTheme: Boolean
+    isDarkTheme: Boolean,
+    preferencesManager: PreferencesManager
 ) {
     val viewModel: MainViewModel = viewModel()
     val noteViewModel: NoteViewModel = viewModel()
@@ -51,7 +53,7 @@ fun AppNavHost(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val factory = RestaurantViewModelFactory(repository, locationRepository, noteRepository)
+    val factory = RestaurantViewModelFactory(repository, locationRepository, noteRepository, preferencesManager)
     val restaurantViewModel: RestaurantViewModel = viewModel(factory = factory)
 
     val dishViewModel: DishViewModel = viewModel()

@@ -205,7 +205,8 @@ class MainActivity : ComponentActivity() {
                                             isLoading = isLoading,
                                             isTablet = isTablet,
                                             modifier = Modifier.padding(innerPadding),
-                                            isDarkTheme = useDarkTheme
+                                            isDarkTheme = useDarkTheme,
+                                            preferencesManager = preferencesManager
                                         )
                                     }
                                 }

@@ -10,6 +10,7 @@ import com.example.eatout.data.repository.LocationRepository
 import com.example.eatout.data.repository.RestaurantRepository
 import com.example.eatout.domain.model.Restaurant
 import com.example.eatout.domain.model.RestaurantUIState
+import com.example.eatout.util.PreferencesManager
 import com.example.eatout.util.RestaurantProcessor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -32,7 +34,8 @@ enum class SortOrder { ASC, DESC }
 class RestaurantViewModel(
     private val repository: RestaurantRepository,
     private val locationRepository: LocationRepository,
-    private val noteRepository: NoteRepository
+    private val noteRepository: NoteRepository,
+    private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
     private val allRestaurantsMock = listOf(
@@ -176,6 +179,11 @@ class RestaurantViewModel(
         noteRepository.observeNotes("rest_to_visit", { notes ->
             toVisitNotes.value = notes
         }, {})
+
+        viewModelScope.launch {
+            allRestaurants.first { it.isNotEmpty() }
+//            checkAndResetDaily()
+        }
     }
     val userLocation = locationRepository.location
 
@@ -225,7 +233,7 @@ class RestaurantViewModel(
 
         _selectedTags.value = emptyList()
     }
-    fun getRecomendedRestaurant(): RestaurantUIState? {
+    fun getRecommendedRestaurant(): RestaurantUIState? {
         var restaurant = allRestaurants.value[Random.nextInt(0,allRestaurants.value.size-1)]
 
         var isFav = favoriteNotes.value.any { it.restauracja == restaurant.name }
@@ -299,5 +307,44 @@ class RestaurantViewModel(
         }
     }
 
+    private val _dailyRecommendation = MutableStateFlow<RestaurantUIState?>(null)
+    val dailyRecommendation = _dailyRecommendation.asStateFlow()
+
+    fun checkAndResetDaily() {
+        viewModelScope.launch {
+
+            preferencesManager.saveRecommendation("2026-06-15", 0L, "test")
+            val currentDate = getTodayDate()
+            val saved = preferencesManager.recFlow.first()
+            val currentAll = allRestaurants.value
+
+            if (currentAll.isEmpty()) return@launch
+
+            if (saved?.date != currentDate) {
+                val newRec = getRecommendedRestaurant()
+
+                if (newRec != null) {
+                    _dailyRecommendation.value = newRec
+                    preferencesManager.saveRecommendation(currentDate, newRec.id, newRec.name)
+                }
+            } else {
+                _dailyRecommendation.value = getRestaurantById(saved.id)
+            }
+        }
+    }
+
+    // W RestaurantViewModel
+    fun triggerDailyRecommendation() {
+        checkAndResetDaily()
+    }
+
+
+
+
+    private fun getTodayDate(): String {
+        val calendar = java.util.Calendar.getInstance()
+        val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
 
 }
