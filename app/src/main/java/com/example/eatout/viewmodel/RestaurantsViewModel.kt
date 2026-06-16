@@ -171,7 +171,6 @@ class RestaurantViewModel(
     )
 
     init {
-        // Uruchamiamy nasłuchiwanie w momencie stworzenia ViewModelu
         noteRepository.observeNotes("favourites", { notes ->
             favoriteNotes.value = notes
         }, {})
@@ -333,12 +332,18 @@ class RestaurantViewModel(
         }
     }
 
-    // W RestaurantViewModel
+    private val _isShowingRestaurant = MutableStateFlow(false)
+    val isShowingRestaurant = _isShowingRestaurant.asStateFlow()
+
     fun triggerDailyRecommendation() {
+        _isShowingRestaurant.value = false // Resetujemy widoczność
         checkAndResetDaily()
+
+        viewModelScope.launch {
+            kotlinx.coroutines.delay(1500)
+            _isShowingRestaurant.value = true
+        }
     }
-
-
 
 
     private fun getTodayDate(): String {

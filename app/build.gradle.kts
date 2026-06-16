@@ -71,5 +71,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation(libs.firebase.firestore.ktx)
+    implementation("com.airbnb.android:lottie-compose:6.4.0")
+
 
 }

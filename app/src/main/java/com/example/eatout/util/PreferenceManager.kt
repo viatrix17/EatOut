@@ -55,7 +55,6 @@ class PreferencesManager(private val context: Context) {
         }
     }
 
-    // Pobieramy jako prosty kontener danych (możesz stworzyć małą data class)
     data class SavedRecommendation(val date: String, val id: Long, val name: String)
 
     val recFlow: Flow<SavedRecommendation?> = context.dataStore.data.map { prefs ->
