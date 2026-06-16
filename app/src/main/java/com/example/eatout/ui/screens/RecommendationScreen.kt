@@ -46,7 +46,7 @@
         viewModel: RestaurantViewModel
     ) {
         val restaurant by viewModel.dailyRecommendation.collectAsState()
-        val showCard by viewModel.isShowingRestaurant.collectAsState()
+        val showCelebration by viewModel.shouldShowCelebration.collectAsState()
 
         AnimatedContent(
             targetState = restaurant,
@@ -65,19 +65,21 @@
                         onGenerateClick = { viewModel.triggerDailyRecommendation() }
                     )
                 } else {
-                    CelebrationAnimation()
-
-                    if (showCard) {
-                        RecommendationPhoneLayout(
-                            restaurant = targetRestaurant,
-                            onRestaurantClick = { id ->
-                                navController.navigate("details/$id")
-                            })
+                    if (showCelebration) {
+                        CelebrationAnimation()
                     }
+
+                    RecommendationPhoneLayout(
+                        restaurant = targetRestaurant,
+                        onRestaurantClick = { id ->
+                            navController.navigate("details/$id")
+                        }
+                    )
                 }
             }
         }
     }
+
     @Composable
     fun RecommendationEmptyLayout(onGenerateClick: () -> Unit) {
         Column(

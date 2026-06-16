@@ -181,7 +181,7 @@ class RestaurantViewModel(
 
         viewModelScope.launch {
             allRestaurants.first { it.isNotEmpty() }
-//            checkAndResetDaily()
+            checkAndResetDaily()
         }
     }
     val userLocation = locationRepository.location
@@ -274,6 +274,35 @@ class RestaurantViewModel(
         )
     }
 
+    fun getRestaurantByIdFlow(id: Long): StateFlow<RestaurantUIState?> {
+        return combine(
+            allRestaurants,
+            favoriteNotes,
+            toVisitNotes
+        ) { all, favs, toVisit ->
+            val restaurant = all.find { it.id == id } ?: return@combine null
+
+            val favNames = favs.map { it.restauracja }.toSet()
+            val toVisitNames = toVisit.map { it.restauracja }.toSet()
+
+            RestaurantUIState(
+                id = restaurant.id,
+                name = restaurant.name,
+                address = restaurant.address,
+                cuisineType = restaurant.cuisineType,
+                tags = restaurant.tags,
+                lan = restaurant.lan,
+                lon = restaurant.lon,
+                isFavorite = favNames.contains(restaurant.name),
+                isToVisit = toVisitNames.contains(restaurant.name)
+            )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+    }
+
     fun toggleFavourite(rest: RestaurantUIState) {
         val note = Note(
             restauracja = rest.name,
@@ -309,39 +338,38 @@ class RestaurantViewModel(
     private val _dailyRecommendation = MutableStateFlow<RestaurantUIState?>(null)
     val dailyRecommendation = _dailyRecommendation.asStateFlow()
 
+    // W ViewModelu
+    private val _shouldShowCelebration = MutableStateFlow(false)
+    val shouldShowCelebration = _shouldShowCelebration.asStateFlow()
+
     fun checkAndResetDaily() {
         viewModelScope.launch {
-
-            preferencesManager.saveRecommendation("2026-06-15", 0L, "test")
+//            preferencesManager.saveRecommendation("2026-06-15", 0L, "test")
             val currentDate = getTodayDate()
             val saved = preferencesManager.recFlow.first()
             val currentAll = allRestaurants.value
 
             if (currentAll.isEmpty()) return@launch
 
-            if (saved?.date != currentDate) {
-                val newRec = getRecommendedRestaurant()
-
-                if (newRec != null) {
-                    _dailyRecommendation.value = newRec
-                    preferencesManager.saveRecommendation(currentDate, newRec.id, newRec.name)
-                }
-            } else {
+            if (saved != null && saved.date == currentDate) {
                 _dailyRecommendation.value = getRestaurantById(saved.id)
+                _shouldShowCelebration.value = false
+            } else {
+                _dailyRecommendation.value = null
+                _shouldShowCelebration.value = false
             }
         }
     }
 
-    private val _isShowingRestaurant = MutableStateFlow(false)
-    val isShowingRestaurant = _isShowingRestaurant.asStateFlow()
-
     fun triggerDailyRecommendation() {
-        _isShowingRestaurant.value = false // Resetujemy widoczność
-        checkAndResetDaily()
-
         viewModelScope.launch {
-            kotlinx.coroutines.delay(1500)
-            _isShowingRestaurant.value = true
+            val newRec = getRecommendedRestaurant()
+            if (newRec != null) {
+                val today = getTodayDate()
+                _dailyRecommendation.value = newRec
+                preferencesManager.saveRecommendation(today, newRec.id, newRec.name)
+                _shouldShowCelebration.value = true
+            }
         }
     }
 

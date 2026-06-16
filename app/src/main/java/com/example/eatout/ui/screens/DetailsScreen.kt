@@ -2,6 +2,7 @@ package com.example.eatout.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -97,16 +98,20 @@ fun DetailsScreen(
 
     val currentRestaurant = restaurantViewModel.getRestaurantById(restaurantId)
 
+    val restaurantState by remember(restaurantId) {
+        restaurantViewModel.getRestaurantByIdFlow(restaurantId)
+    }.collectAsState()
+
     val dishes by dishViewModel.filteredDishes.collectAsState()
     LaunchedEffect(Unit) {
         dishViewModel.selectAll()
     }
 
-    if (currentRestaurant != null) {
+    if (restaurantState != null) {
         DetailsPhoneLayout(
             restaurantViewModel = restaurantViewModel,
             dishViewModel = dishViewModel,
-            restaurant = currentRestaurant,
+            restaurant = restaurantState!!,
             dishes = dishes,
             onAddRestaurantClick = { restaurant ->
                 if (restaurant.isToVisit) {
@@ -145,125 +150,88 @@ fun DetailsPhoneLayout(
     listState: LazyListState = rememberLazyListState(),
     onClick: (Dish) -> Unit,
     isDarkTheme: Boolean
-){
+) {
     LazyColumn(
+        state = listState,
         modifier = Modifier.fillMaxWidth()
     ) {
         item {
-            Column(
-                modifier = Modifier.padding(horizontal = 12.dp),
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_placeholder),
-                    contentDescription = "Image",
-                    colorFilter = ColorFilter.tint(if (isDarkTheme) Color.White else Color.Black),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        "${restaurant.name}",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                    ) {
-                        Text(
-                            "${restaurant.address}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            restaurant.tags.forEach { tag ->
-                                TagLabel(text = tag)
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Column(
-                        modifier = Modifier,
-                        horizontalAlignment = Alignment.End
-                    ) {
-                        Row {
-                            IconButton(onClick = { onAddRestaurantClick(restaurant) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Ulubione",
-                                    modifier = Modifier.size(24.dp),
-                                    tint = if (!restaurant.isToVisit) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                                )
-                            }
-
-                            IconButton(onClick = { restaurantViewModel.toggleFavourite(restaurant) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = "Ulubione",
-                                    modifier = Modifier.size(24.dp),
-                                    tint = if (restaurant.isFavorite) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                                )
-                            }
-                        }
-                    }
-                }
-
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Menu",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            HorizontalDivider(
-                thickness = 0.5.dp,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+            Image(
+                painter = painterResource(id = R.drawable.ic_placeholder),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(if (isDarkTheme) Color.White else Color.Black),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp), // Nieco wyższy dla lepszego efektu
+                contentScale = ContentScale.Crop
             )
 
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = restaurant.name,
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = restaurant.address,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    Row {
+                        IconButton(onClick = { onAddRestaurantClick(restaurant) }) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add to visit",
+                                tint = if (restaurant.isToVisit) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                            )
+                        }
+                        IconButton(onClick = { restaurantViewModel.toggleFavourite(restaurant) }) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "Favorite",
+                                tint = if (restaurant.isFavorite) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outline
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    restaurant.tags.forEach { tag -> TagLabel(text = tag) }
+                }
+            }
+
+            Text(
+                text = "Menu",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+            )
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
         }
 
         items(dishes, key = { it.id }) { dish ->
-            DishCard(
-                dish = dish,
-                onClick = { onClick(dish) },
-                viewModel = dishViewModel,
-                onAddClick = { onAddDishClick(dish) }
-            )
+            Box(modifier = Modifier.padding(horizontal = 8.dp)) {
+                DishCard(
+                    dish = dish,
+                    onClick = { onClick(dish) },
+                    viewModel = dishViewModel,
+                    onAddClick = { onAddDishClick(dish) }
+                )
+            }
         }
+
+        item { Spacer(modifier = Modifier.height(16.dp)) }
     }
 }
