@@ -71,7 +71,7 @@
                         RecommendationPhoneLayout(
                             restaurant = targetRestaurant,
                             onRestaurantClick = { id ->
-                                navController.navigate("details_screen/$id")
+                                navController.navigate("details/$id")
                             })
                     }
                 }
