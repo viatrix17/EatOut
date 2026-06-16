@@ -47,6 +47,7 @@
     ) {
         val restaurant by viewModel.dailyRecommendation.collectAsState()
         val showCelebration by viewModel.shouldShowCelebration.collectAsState()
+        val isDataReady by viewModel.isDataReady.collectAsState()
 
         AnimatedContent(
             targetState = restaurant,
@@ -62,6 +63,7 @@
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 if (targetRestaurant == null) {
                     RecommendationEmptyLayout(
+                        isDataReady = isDataReady,
                         onGenerateClick = { viewModel.triggerDailyRecommendation() }
                     )
                 } else {
@@ -81,7 +83,10 @@
     }
 
     @Composable
-    fun RecommendationEmptyLayout(onGenerateClick: () -> Unit) {
+    fun RecommendationEmptyLayout(
+        isDataReady: Boolean,
+        onGenerateClick: () -> Unit
+    ) {
         Column(
             modifier = Modifier.fillMaxSize().padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -108,7 +113,11 @@
                 onClick = onGenerateClick,
                 modifier = Modifier.fillMaxWidth(0.8f)
             ) {
-                Text("Wylosuj restaurację")
+                if (isDataReady) {
+                    Text("Draw a restaurant")
+                } else {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MaterialTheme.colorScheme.onPrimary)
+                }
             }
         }
     }

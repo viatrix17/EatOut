@@ -170,6 +170,9 @@ class RestaurantViewModel(
         initialValue = emptyList()
     )
 
+    private val _isDataReady = MutableStateFlow(false)
+    val isDataReady = _isDataReady.asStateFlow()
+
     init {
         noteRepository.observeNotes("favourites", { notes ->
             favoriteNotes.value = notes
@@ -181,6 +184,7 @@ class RestaurantViewModel(
 
         viewModelScope.launch {
             allRestaurants.first { it.isNotEmpty() }
+            _isDataReady.value = true
             checkAndResetDaily()
         }
     }
@@ -342,6 +346,8 @@ class RestaurantViewModel(
     private val _shouldShowCelebration = MutableStateFlow(false)
     val shouldShowCelebration = _shouldShowCelebration.asStateFlow()
 
+
+
     fun checkAndResetDaily() {
         viewModelScope.launch {
 //            preferencesManager.saveRecommendation("2026-06-15", 0L, "test")
@@ -362,6 +368,10 @@ class RestaurantViewModel(
     }
 
     fun triggerDailyRecommendation() {
+        if (allRestaurants.value.isEmpty()) {
+            Log.e("ViewModel", "Próba losowania przed załadowaniem danych! Zablokowano.")
+            return
+        }
         viewModelScope.launch {
             val newRec = getRecommendedRestaurant()
             if (newRec != null) {
