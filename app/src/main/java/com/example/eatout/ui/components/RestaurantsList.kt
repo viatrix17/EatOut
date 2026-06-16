@@ -1,6 +1,7 @@
 package com.example.eatout.ui.components
 
 import android.R.attr.data
+import android.R.attr.maxLines
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +56,7 @@ import com.example.eatout.R
 import com.example.eatout.viewmodel.RestaurantViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.style.TextOverflow
 import com.example.eatout.domain.model.RestaurantUIState
 
 @Composable
@@ -121,43 +123,48 @@ fun RestaurantCard(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp),
+            .padding(horizontal = 4.dp, vertical = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(16.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_placeholder), // TO DO dodać biały ic_placeholder
-                contentDescription = "Logo",
+                painter = painterResource(id = R.drawable.ic_placeholder),
+                contentDescription = null,
                 modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .size(72.dp)
+                    .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )
 
             Column(
                 modifier = Modifier
-                    .weight(2f)
-                    .padding(horizontal = 12.dp)
+                    .weight(1f)
+                    .padding(start = 12.dp)
             ) {
-                Text(text = restaurant.name,
+                Text(
+                    text = restaurant.name,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground)
-                Text(text = restaurant.address,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = restaurant.address,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground)
-                Text(text = restaurant.cuisineType,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground)
-                Spacer(modifier = Modifier.height(10.dp))
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = restaurant.cuisineType,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
 
+                Spacer(modifier = Modifier.height(8.dp))
                 @OptIn(ExperimentalLayoutApi::class)
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -168,42 +175,31 @@ fun RestaurantCard(
                     }
                 }
             }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
+            Column(horizontalAlignment = Alignment.End) {
                 if (showDistance) {
                     Text(
                         text = "%.1f km".format(distance),
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline
                     )
                 }
-                Row(horizontalArrangement = Arrangement.End) {
-                    IconButton(onClick = onAddClick) { // to visit
+                Row {
+                    IconButton(onClick = onAddClick, modifier = Modifier.size(36.dp)) {
                         Icon(
                             imageVector = if (!isToVisitScreen) Icons.Default.Add else Icons.Default.Remove,
-                            contentDescription = "Ulubione",
-                            modifier = Modifier.size(24.dp),
-                            tint = if (!restaurant.isToVisit) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
-
-                    IconButton(onClick = onFavoriteAddClick ) {
+                    IconButton(onClick = onFavoriteAddClick, modifier = Modifier.size(36.dp)) {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = "Ulubione",
-                            modifier = Modifier.size(24.dp),
-                            tint = if (restaurant.isFavorite) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            contentDescription = null,
+                            tint = if (restaurant.isFavorite) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outline
                         )
                     }
                 }
             }
-
         }
     }
 }

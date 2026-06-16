@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -187,25 +188,22 @@ fun RestaurantListScreenPhoneLayout(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically)
-        {
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { onSearchQueryChange(it) },
-                label = { Text("Browse restaurants") },
+                label = { Text("Browse") },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(16.dp),
+                    .weight(1f),
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        keyboardController?.hide()
-                    }
-                )
+                keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() })
             )
+
             FilterButton(
                 text = "Filter",
                 onClick = { onFilterStateChange(true) }

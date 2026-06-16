@@ -17,6 +17,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -77,47 +79,81 @@ fun CustomTopBar(
 @Composable
 fun CustomBottomBar(
     navController: NavHostController
-){
-    BottomAppBar(
+) {
+    NavigationBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        contentPadding = PaddingValues(horizontal = 16.dp)
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
     ) {
-        Spacer(Modifier.weight(1f))
-        // favs
-        IconButton(onClick = {
-            navController.navigate("favourite")
-            {
+        val navigateTo: (String) -> Unit = { route ->
+            navController.navigate(route) {
                 popUpTo("home") { saveState = true }
                 launchSingleTop = true
                 restoreState = true
             }
-        }) {
-            Icon(Icons.Default.Star, contentDescription = "Menu")
         }
-        Spacer(Modifier.weight(1f))
-        // restaurants
-        IconButton(onClick = { navController.navigate("to-visit"){
 
-                popUpTo("home") { saveState = true }
-                launchSingleTop = true
-                restoreState = true
-
-        } }) {
-            Icon(Icons.Default.Restaurant, contentDescription = "restaurants to visit")
-        }
-        Spacer(Modifier.weight(1f))
-
-        // dishes
-        IconButton(onClick = { navController.navigate("dishes")
-        {
-            popUpTo("home") { saveState = true }
-            launchSingleTop = true
-            restoreState = true
-        }}) {
-            Icon(Icons.Default.LunchDining, contentDescription = "Saved dishes")
-        }
-        Spacer(Modifier.weight(1f))
+        NavigationBarItem(
+            selected = false,
+            onClick = { navigateTo("favourite") },
+            icon = { Icon(Icons.Default.Star, contentDescription = "Favorites") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = { navigateTo("to-visit") },
+            icon = { Icon(Icons.Default.Restaurant, contentDescription = "Restaurants") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = { navigateTo("dishes") },
+            icon = { Icon(Icons.Default.LunchDining, contentDescription = "Dishes") }
+        )
     }
-
 }
+
+//@Composable
+//fun CustomBottomBar(
+//    navController: NavHostController
+//){
+//    BottomAppBar(
+//        containerColor = MaterialTheme.colorScheme.primaryContainer,
+//        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+//        contentPadding = PaddingValues(horizontal = 16.dp)
+//    ) {
+//        Spacer(Modifier.weight(1f))
+//        // favs
+//        IconButton(onClick = {
+//            navController.navigate("favourite")
+//            {
+//                popUpTo("home") { saveState = true }
+//                launchSingleTop = true
+//                restoreState = true
+//            }
+//        }) {
+//            Icon(Icons.Default.Star, contentDescription = "Menu")
+//        }
+//        Spacer(Modifier.weight(1f))
+//        // restaurants
+//        IconButton(onClick = { navController.navigate("to-visit"){
+//
+//                popUpTo("home") { saveState = true }
+//                launchSingleTop = true
+//                restoreState = true
+//
+//        } }) {
+//            Icon(Icons.Default.Restaurant, contentDescription = "restaurants to visit")
+//        }
+//        Spacer(Modifier.weight(1f))
+//
+//        // dishes
+//        IconButton(onClick = { navController.navigate("dishes")
+//        {
+//            popUpTo("home") { saveState = true }
+//            launchSingleTop = true
+//            restoreState = true
+//        }}) {
+//            Icon(Icons.Default.LunchDining, contentDescription = "Saved dishes")
+//        }
+//        Spacer(Modifier.weight(1f))
+//    }
+//
+//}

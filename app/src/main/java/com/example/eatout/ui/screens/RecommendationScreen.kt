@@ -9,6 +9,7 @@
     import androidx.compose.animation.slideOutVertically
     import androidx.compose.animation.togetherWith
     import androidx.compose.foundation.Image
+    import androidx.compose.foundation.clickable
     import androidx.compose.foundation.layout.Arrangement
     import androidx.compose.foundation.layout.Column
     import androidx.compose.material3.Button
@@ -27,6 +28,10 @@
     import com.example.eatout.R
     import androidx.compose.foundation.layout.*
     import androidx.compose.foundation.shape.RoundedCornerShape
+    import androidx.compose.material.icons.Icons
+    import androidx.compose.material.icons.filled.Explore
+    import androidx.compose.material.icons.filled.RestaurantMenu
+    import androidx.compose.material.icons.filled.Star
     import androidx.compose.material3.*
     import androidx.compose.ui.unit.dp
     import com.airbnb.lottie.compose.LottieAnimation
@@ -63,7 +68,11 @@
                     CelebrationAnimation()
 
                     if (showCard) {
-                        RecommendationPhoneLayout(restaurant = targetRestaurant)
+                        RecommendationPhoneLayout(
+                            restaurant = targetRestaurant,
+                            onRestaurantClick = { id ->
+                                navController.navigate("details_screen/$id")
+                            })
                     }
                 }
             }
@@ -87,7 +96,7 @@
 //                textAlign = TextAlign.Center
 //            )
             Text(
-                text = "Kliknij poniżej, aby wylosować restaurację, którą warto odwiedzić!",
+                text = "Tap below to discover a restaurant worth visiting!!",
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -103,21 +112,24 @@
     }
 
     @Composable
-    fun RecommendationPhoneLayout(restaurant: RestaurantUIState) {
+    fun RecommendationPhoneLayout(
+        restaurant: RestaurantUIState,
+        onRestaurantClick: (Long) -> Unit
+    ) {
         Column(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Recommendation for today:",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.RestaurantMenu, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Recommendation for today:", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clickable { onRestaurantClick(restaurant.id) },
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
@@ -137,10 +149,33 @@
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.secondary
                     )
+
                 }
+
+
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Tap the card to see details",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Icon(
+                imageVector = Icons.Default.Explore,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(64.dp)
+                    .padding(bottom = 16.dp),
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+            )
         }
     }
+
     @Composable
     fun CelebrationAnimation() {
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.confetti))

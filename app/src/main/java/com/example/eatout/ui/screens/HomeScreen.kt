@@ -51,9 +51,8 @@ fun HomePhoneLayout(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp) // Odstępy między kartami
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Każda karta otrzymuje weight(1f), dzięki czemu dzielą ekran po równo
         BigMenuCard(text = "Browse", icon = R.drawable.outline_food_bank_24, modifier = Modifier.weight(1f), onClick = onBrowseClick)
         BigMenuCard(text = "Closest to You", icon = R.drawable.outline_map_24, modifier = Modifier.weight(1f), onClick = onClosestClick)
         BigMenuCard(text = "Daily Recommendation", icon = R.drawable.outline_featured_seasonal_and_gifts_24, modifier = Modifier.weight(1f), onClick = onRecommendationsClick)
@@ -70,7 +69,7 @@ fun BigMenuCard(text: String, icon: Int, modifier: Modifier, onClick: () -> Unit
         onClick = onClick
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -78,7 +77,7 @@ fun BigMenuCard(text: String, icon: Int, modifier: Modifier, onClick: () -> Unit
                 painter = painterResource(id = icon),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(80.dp), // Duża ikona
+                    .size(80.dp),
                 contentScale = ContentScale.Fit
             )
             Spacer(modifier = Modifier.height(16.dp))

@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -101,30 +103,26 @@ fun DishCard(
     viewModel: DishViewModel,
     onAddClick: () -> Unit
 ) {
-
-
     Card(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp),
+            .padding(horizontal = 4.dp, vertical = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(16.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_placeholder), // TO DO dodać biały ic_placeholder
-                contentDescription = "Logo",
+                painter = painterResource(id = R.drawable.ic_placeholder),
+                contentDescription = null,
                 modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .size(64.dp)
+                    .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )
 
@@ -135,43 +133,50 @@ fun DishCard(
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = dish.name,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.weight(1f, fill = false)
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
                     Text(
                         text = "${dish.price} zł",
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary, // Wyróżnienie ceny
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
-                Text(text = dish.ingredients,
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = dish.ingredients,
                     maxLines = 2,
                     style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     overflow = TextOverflow.Ellipsis
                 )
             }
 
-            IconButton(onClick = onAddClick) {
-                Icon(
-                    imageVector = if(dish.isToTry) Icons.Default.Remove else Icons.Default.Add,
-                    contentDescription = "Ulubione",
-                    modifier = Modifier.size(24.dp),
-                    tint = if (!dish.isToTry) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
-            }
-            IconButton(onClick = { viewModel.toggleFavourite(dish.id) }) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "Ulubione",
-                    modifier = Modifier.size(24.dp),
-                    tint = if (dish.isFavorite) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
+            Column {
+                IconButton(onClick = onAddClick, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        imageVector = if(dish.isToTry) Icons.Default.Remove else Icons.Default.Add,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                IconButton(onClick = { viewModel.toggleFavourite(dish.id) }, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = if (dish.isFavorite) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outline
+                    )
+                }
             }
         }
     }
